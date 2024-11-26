@@ -1,0 +1,46 @@
+# Exclude Python cache files and directories
+__pycache__/
+*.pyc
+*.pyo
+enable_wol.sh
+README.md
+tests.py
+somerandomfile_test
+
+
+
+# Exclude logs
+*.log
+*.out
+*.err
+/var/log/
+
+# Exclude virtual environments
+venv/
+env/
+
+# Exclude configuration files or sensitive files (if needed)
+*.pem
+*.key
+*.crt
+*.conf
+
+# Exclude temporary or editor-specific files
+*.swp
+*.swo
+*.bak
+*~
+.DS_Store
+*.tmp
+
+# Exclude build artifacts
+build/
+dist/
+*.egg-info/
+
+# Exclude .git and other VCS directories
+.git/
+.gitignore
+
+# Exclude temporary system files
+Thumbs.db

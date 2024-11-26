@@ -1,0 +1,69 @@
+import unittest
+from unittest.mock import patch, MagicMock
+from io import BytesIO
+import os
+import json
+import subprocess
+from maas_webhook_2_5_4 import HTTPWoL, machine_status, GET_REGEX, POST_REGEX
+from io import BytesIO
+from unittest.mock import Mock
+
+
+
+class TestHTTPWoL(unittest.TestCase):
+    @patch.dict(os.environ, {"MAAS_API_KEY": "f5NpGPWDdHmrfdf97Xe:AEW3b09ERjx4s5gYGm:ajXMY9AEzRvMgmwAc5NPhT87MxJFD3Ek"})
+    def setUp(self):
+        self.handler = HTTPWoL
+        self.handler.username = None
+        self.handler.password = None
+        self.handler.token = None
+
+    def mock_request(self, path, method="GET", headers=None):
+        headers = headers or {}
+        request = MagicMock()
+        request.path = path
+        request.command = method
+        request.headers = headers
+        request.wfile = BytesIO()
+        return request
+
+    @patch("maas_webhook_2_5_4.os.getenv")
+    def test_authentication_with_token(self, mock_getenv):
+        mock_server = Mock()
+        mock_request = Mock()
+        mock_request.makefile = Mock(return_value=BytesIO(b"GET /path HTTP/1.1\r\n"))
+
+        handler = self.handler(mock_request, ('127.0.0.1', 12345), mock_server)
+
+        handler.headers = {"Authorization": "Bearer valid_token"}
+        handler.wfile = BytesIO()
+
+        handler.token = "valid_token"
+
+        authenticated = handler._authenticate()
+        self.assertTrue(authenticated, "Authentication with a valid token should pass")
+
+
+    def test_regex_get(self):
+        match = GET_REGEX.match("/2c:44:fd:2a:0e:2a/")
+        self.assertIsNotNone(match, "GET regex should match valid MAC path")
+        self.assertEqual(match.group("MAC"), "2c:44:fd:2a:0e:2a")
+
+    def test_regex_post_start(self):
+        match = POST_REGEX.match("/2c:44:fd:2a:0e:2a/?op=start")
+        self.assertIsNotNone(match, "POST regex should match valid MAC and start op")
+        self.assertEqual(match.group("MAC"), "2c:44:fd:2a:0e:2a")
+        self.assertEqual(match.group("OP"), "start")
+
+    def test_regex_post_stop(self):
+        match = POST_REGEX.match("/2c:44:fd:2a:0e:2a/?op=stop")
+        self.assertIsNotNone(match, "POST regex should match valid MAC and stop op")
+        self.assertEqual(match.group("MAC"), "2c:44:fd:2a:0e:2a")
+        self.assertEqual(match.group("OP"), "stop")
+
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+
