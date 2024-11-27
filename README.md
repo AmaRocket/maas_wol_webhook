@@ -1,6 +1,4 @@
 # WOL_Webserver
-- [MAAS-DBIS](https://maas.dmi.unibas.ch/)
-- [Wiki DOCU](https://wiki.biozentrum.unibas.ch/pages/viewpage.action?spaceKey=DMIIT&title=WebHook+Implementation+MAAS)
 
 # Webhook-based Wake-on-LAN (WoL) Service
 
