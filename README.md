@@ -1,5 +1,3 @@
-# WOL_Webserver
-
 # Webhook-based Wake-on-LAN (WoL) Service
 
 This service provides a REST API to trigger Wake-on-LAN (WoL) and shutdown commands for machines. It can be used to remotely wake up or shut down machines in a network.
