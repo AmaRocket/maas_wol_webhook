@@ -29,6 +29,8 @@ pipeline {
                 dir('/usr/local/maas_wol_service/WOL/tests/') {
                 script {
                     // Run tests using pytest
+                    sh 'chmod +x tests.py'
+                    sh 'python3 tests.py'
                     sh 'tests.py'
                     }
                 }
