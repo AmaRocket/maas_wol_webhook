@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     // Splitting the API_KEY into components
-                    def apiKeyParts = API_KEY.split(',')
+                    def apiKeyParts = API_KEY.split(':')
                     def consumerKey = apiKeyParts[0]
                     def tokenKey = apiKeyParts[1]
                     def tokenSecret = apiKeyParts[2]
