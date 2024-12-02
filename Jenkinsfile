@@ -26,10 +26,10 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                dir('/usr/local/maas_wol_service/WOL') {
+                dir('/usr/local/maas_wol_service/WOL/tests/') {
                 script {
                     // Run tests using pytest
-                    sh '/tests/tests.py'
+                    sh 'tests.py'
                     }
                 }
             }
