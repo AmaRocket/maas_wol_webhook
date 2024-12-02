@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     // Run tests using pytest
-                    python3 'tests.py'
+                    sh 'tests.py'
                 }
             }
         }
