@@ -30,6 +30,7 @@ pipeline {
                 script {
                     // Run tests using pytest
                     sh '/tests/tests.py'
+                    }
                 }
             }
         }
@@ -43,5 +44,4 @@ pipeline {
             echo 'Pipeline failed. Check logs for errors.'
         }
     }
-}
 }
