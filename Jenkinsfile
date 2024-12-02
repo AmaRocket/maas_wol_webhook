@@ -4,7 +4,9 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/AmaRocket/maas_wol_webhook.git'
+                dir('/usr/local/maas_wol_service/WOL') {
+                    git branch: 'main', url: 'https://github.com/AmaRocket/maas_wol_webhook.git'
+                }
             }
         }
 
@@ -24,9 +26,10 @@ pipeline {
 
         stage('Run Tests') {
             steps {
+                dir('/usr/local/maas_wol_service/WOL') {
                 script {
                     // Run tests using pytest
-                    sh 'tests.py'
+                    sh '/tests/tests.py'
                 }
             }
         }
