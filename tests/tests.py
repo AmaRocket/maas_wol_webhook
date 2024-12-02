@@ -4,9 +4,13 @@ from io import BytesIO
 import os
 import json
 import subprocess
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from maas_webhook_2_5_4 import HTTPWoL, machine_status, GET_REGEX, POST_REGEX
 from io import BytesIO
 from unittest.mock import Mock
+
 
 
 
