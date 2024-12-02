@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        MAAS_API_KEY = credentials('09e36564-0e99-4121-ac83-2650baac0934') //MAAS API TOKEN Assuming the token is stored in Jenkins credentials
+        MAAS_API_KEY = credentials('maas-api-key') //MAAS API TOKEN Assuming the token is stored in Jenkins credentials
     }
 
     stages {
