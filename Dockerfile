@@ -1,7 +1,7 @@
 FROM python:3.10-slim
 
 # Set working directory and non-interactive environment
-WORKDIR /var/jenkins_home/workspace/WOL
+WORKDIR /var/lib/jenkins/workspace/WOL
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Copy project files and install Python dependencies
@@ -20,4 +20,4 @@ RUN apt-get update && \
 EXPOSE 8080
 
 # Start SSH service and run the Python application
-CMD ["python3", "/var/jenkins_home/workspace/WOL/maas_webhook_2_5_4.py"]
+CMD ["python3", "/var/lib/jenkins//workspace/WOL/maas_webhook_2_5_4.py"]
