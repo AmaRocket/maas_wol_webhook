@@ -4,8 +4,8 @@ __pycache__/
 *.pyo
 enable_wol.sh
 README.md
-tests.py
-somerandomfile_test
+tests/
+
 
 
 
@@ -41,6 +41,7 @@ dist/
 # Exclude .git and other VCS directories
 .git/
 .gitignore
+.github
 
 # Exclude temporary system files
 Thumbs.db

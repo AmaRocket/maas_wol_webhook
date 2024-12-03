@@ -37,6 +37,20 @@ pipeline {
         }
     }
 
+    stage('Build Docker Image') {
+            steps {
+                dir('/usr/local/maas_wol_service/WOL') {
+                    script {
+                        // Create a Docker image
+                        sh '''
+                        docker build -t maas-wol-webhook:latest .
+                        '''
+                    }
+                }
+            }
+        }
+    }
+
     post {
         success {
             echo 'All stages passed successfully!'
