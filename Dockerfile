@@ -1,7 +1,7 @@
 FROM python:3.10-slim
 
 # Set working directory and non-interactive environment
-WORKDIR /usr/local/maas_wol_service
+WORKDIR /usr/local/maas_wol_service/WOL
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Copy project files and install Python dependencies
@@ -20,4 +20,4 @@ RUN apt-get update && \
 EXPOSE 8080
 
 # Start SSH service and run the Python application
-CMD ["python3", "/usr/local/maas_wol_service/maas_webhook_2_5_4.py"]
+CMD ["python3", "/usr/local/maas_wol_service/WOL/maas_webhook_2_5_4.py"]
