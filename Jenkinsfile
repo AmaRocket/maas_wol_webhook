@@ -31,7 +31,6 @@ pipeline {
                     // Run tests using pytest
                     sh 'chmod +x tests.py'
                     sh 'python3 tests.py'
-                    }
                 }
             }
         }
