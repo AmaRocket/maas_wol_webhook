@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                dir('/usr/local/maas_wol_service/WOL') {
+                dir('/var/jenkins_home/workspace/WOL') {
                     git branch: 'main', url: 'https://github.com/AmaRocket/maas_wol_webhook.git'
                 }
             }
@@ -26,7 +26,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                dir('/usr/local/maas_wol_service/WOL/tests/') {
+                dir('/var/jenkins_home/workspace/WOL/tests/') {
                 script {
                     // Run tests using pytest
                     sh 'chmod +x tests.py'
@@ -38,7 +38,7 @@ pipeline {
 
     stage('Build Docker Image') {
             steps {
-                dir('/usr/local/maas_wol_service/WOL') {
+                dir('/var/jenkins_home/workspace/WOL') {
                     script {
                         // Create a Docker image
                         sh '''
