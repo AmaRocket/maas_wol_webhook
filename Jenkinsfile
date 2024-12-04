@@ -56,7 +56,7 @@ pipeline {
                         }
                         // Create a Docker image
                         sh '''
-                        docker build -t maas-wol-webhook:latest .
+                        docker build -t maas-wol-webhook .
                         '''
                     }
                 }
@@ -66,10 +66,6 @@ pipeline {
     stage('Check and Restart Container') {
             steps {
                 script {
-                    // Get the MAAS_API_KEY from Jenkins credentials
-                    //MAAS_API_KEY = credentials('maas-api-key')
-                    //echo "This is API Key: ${MAAS_API_KEY}"
-                    // Check if a container is running with the name "maas_wol_container"
                     def runningContainer = sh(script: "docker ps -a -q -f name=maas_wol_container", returnStdout: true).trim()
 
                     if (runningContainer) {
@@ -84,7 +80,7 @@ pipeline {
                     // Run a new container with the updated image
                     echo "Starting a new container with the updated image..."
                     withCredentials([string(credentialsId: 'maas-api-key', variable: 'MAAS_API_KEY')]) {
-                        sh 'docker run -d --env MAAS_API_KEY=$MAAS_API_KEY  -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest  && echo $MAAS_API_KEY'
+                        sh 'docker run -d --env MAAS_API_KEY=$MAAS_API_KEY  -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook  && echo $MAAS_API_KEY'
                     }
 
 //                     sh 'docker run -d --network=host --env-file /etc/docker/maas_api_key.env -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
