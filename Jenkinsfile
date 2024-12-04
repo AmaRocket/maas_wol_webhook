@@ -22,6 +22,7 @@ pipeline {
                     sudo apt update
                     sudo apt install -y python3 python3-pip
                     pip3 install pytest
+                    pip3 install python-dotenv
                     pip3 install -r requirements.txt
                     '''
                 }
