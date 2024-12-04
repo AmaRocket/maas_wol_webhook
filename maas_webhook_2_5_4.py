@@ -237,7 +237,7 @@ def main():
     parser = argparse.ArgumentParser(description="Web server to issue WoL commands")
     parser.add_argument("--broadcast", "-b", default="255.255.255.255", type=str)
     parser.add_argument("--broadcast-port", "-B", default=9, type=int)
-    parser.add_argument("--port", "-p", default=8080, type=int)
+    parser.add_argument("--port", "-p", default=8181, type=int)
     parser.add_argument("--username", "-u", type=str)
     parser.add_argument("--password", "-P", type=str)
     parser.add_argument("--token", "-t", type=str)
