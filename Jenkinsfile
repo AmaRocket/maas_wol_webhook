@@ -81,6 +81,10 @@ pipeline {
                         echo "No running container found. Proceeding to start a new one."
                     }
 
+                    environment {
+                       MAAS_API_KEY = credentials('maas-api-key') // Stored as 'consumer_key,token_key,token_secret'
+                    }
+
                     // Run a new container with the updated image
                     echo "Starting a new container with the updated image..."
                     sh 'docker run -d --env MAAS_API_KEY=$MAAS_API_KEY  -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook  && echo $MAAS_API_KEY'
