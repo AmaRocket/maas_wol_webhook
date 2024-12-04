@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from dotenv import load_dotenv
 import argparse
 import base64
 import http.server
@@ -41,7 +40,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger("HTTPWoL")
 
-load_dotenv()
 api_key = os.getenv("MAAS_API_KEY")
 if not api_key:
     print("MAAS_API_KEY environment variable is not set")
@@ -270,5 +268,4 @@ def main():
 
 
 if __name__ == "__main__":
-    API_KEY = os.environ['MAAS_API_KEY']
     main()

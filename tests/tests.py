@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from dotenv import load_dotenv
 from io import BytesIO
 import os
 import json
@@ -12,8 +11,6 @@ from maas_webhook_2_5_4 import HTTPWoL, machine_status, GET_REGEX, POST_REGEX
 from io import BytesIO
 from unittest.mock import Mock
 
-
-load_dotenv()
 
 class TestHTTPWoL(unittest.TestCase):
     @patch.dict(os.environ, {"MAAS_API_KEY": os.getenv("MAAS_API_KEY")})
