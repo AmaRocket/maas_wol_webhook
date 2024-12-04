@@ -96,7 +96,7 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
         except subprocess.CalledProcessError as e:
             logger.error(f"Error executing MAAS command: {e.stderr}")
         except (KeyError, IndexError) as e:
-            logger.error(f"Error parsing IP address from MAAS output: {e}")
+            logger.error(f"Error parsing IP address from MAAS output IP: {ip_address} error : {e}")
         except Exception as e:
             logger.error(f"An unexpected error occurred: {e}")
 
