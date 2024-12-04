@@ -54,7 +54,7 @@ pipeline {
                 script {
                     // Get the MAAS_API_KEY from Jenkins credentials
                     def maasApiKey = credentials('maas-api-key')
-                    echo maasApiKey
+                    echo "This is API Key: ${maasApiKey}"
                     // Check if a container is running with the name "maas_wol_container"
                     def runningContainer = sh(script: "docker ps -a -q -f name=maas_wol_container", returnStdout: true).trim()
 
