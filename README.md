@@ -43,7 +43,7 @@ The service can be run in a Docker container. Here's how to set up the Docker en
 
 3. **Run the Docker container**:
     ```bash
-    docker run --network=host -e MAAS_API_KEY='Your:API:Key' -p 8080:8080 -v /home/user/.ssh:/root/.ssh --name maas_wol_container maas_webhook 
+    docker run --network=host -e MAAS_API_KEY='Your:API:Key' -v /home/user/.ssh:/root/.ssh --name maas_wol_container maas_webhook 
     ```
 
 ### Environment Variables

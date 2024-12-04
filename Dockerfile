@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Copy project files and install Python dependencies
 COPY requirements.txt /tmp/requirements.txt
-COPY . /usr/local/maas_wol_service
+COPY . /var/lib/jenkins/workspace/WOL
 
 # Install necessary packages
 RUN apt-get update && \
