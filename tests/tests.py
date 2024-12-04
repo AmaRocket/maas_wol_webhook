@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
+from dotenv import load_dotenv
 from io import BytesIO
 import os
 import json
@@ -12,10 +13,10 @@ from io import BytesIO
 from unittest.mock import Mock
 
 
-
+load_dotenv()
 
 class TestHTTPWoL(unittest.TestCase):
-    @patch.dict(os.environ, {"MAAS_API_KEY": "f5NpGPWDdHmrfdf97Xe:AEW3b09ERjx4s5gYGm:ajXMY9AEzRvMgmwAc5NPhT87MxJFD3Ek"})
+    @patch.dict(os.environ, {"MAAS_API_KEY": os.getenv("MAAS_API_KEY")})
     def setUp(self):
         self.handler = HTTPWoL
         self.handler.username = None
