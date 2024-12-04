@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        MAAS_API_KEY = credentials('maas-api-key') // Stored as 'consumer_key,token_key,token_secret'
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
@@ -26,7 +30,6 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                withCredentials([string(credentialsId: 'maas-api-key', variable: 'MAAS_API_KEY')]) {
                     dir('/var/lib/jenkins/workspace/WOL/tests/') {
                     script {
                         // Run tests using pytest
@@ -38,7 +41,6 @@ pipeline {
                 }
             }
         }
-    }
 
     stage('Build Docker Image') {
             steps {
@@ -79,10 +81,6 @@ pipeline {
                         sh "docker rm -f maas_wol_container"
                     } else {
                         echo "No running container found. Proceeding to start a new one."
-                    }
-
-                    environment {
-                       MAAS_API_KEY = credentials('maas-api-key') // Stored as 'consumer_key,token_key,token_secret'
                     }
 
                     // Run a new container with the updated image
