@@ -43,6 +43,15 @@ pipeline {
             }
         }
 
+    stage('Clean up Dangling Images') {
+        steps {
+            script {
+                // Remove all unused and dangling images
+                sh 'docker image prune -f'
+                }
+            }
+        }
+
     stage('Build Docker Image') {
             steps {
                 dir('/var/lib/jenkins/workspace/WOL') {
@@ -63,7 +72,7 @@ pipeline {
                         }
                         // Create a Docker image
                         sh '''
-                        docker build -t maas-wol-webhook .
+                        docker build -t maas-wol-webhook:latest .
                         '''
                     }
                 }
