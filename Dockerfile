@@ -17,7 +17,7 @@ RUN apt-get update && \
     pip install --no-cache-dir -r /tmp/requirements.txt && mkdir -p /var/log/maas/wol && rm -f /tmp/requirements.txt
 
 # Expose necessary ports
-EXPOSE 8080
+EXPOSE 8181
 
 # Start SSH service and run the Python application
 CMD ["python3", "/var/lib/jenkins//workspace/WOL/maas_webhook_2_5_4.py"]
