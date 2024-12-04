@@ -83,7 +83,7 @@ pipeline {
 
                     // Run a new container with the updated image
                     echo "Starting a new container with the updated image..."
-                    sh 'docker run -d --network=host --env-file /etc/docker/maas_api_key.env -v /home/user/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
+                    sh 'docker run -d --network=host --env-file /etc/docker/maas_api_key.env -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
                 }
             }
         }
