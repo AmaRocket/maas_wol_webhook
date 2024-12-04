@@ -48,6 +48,33 @@ pipeline {
                 }
             }
         }
+
+    stage('Check and Restart Container') {
+            steps {
+                script {
+                    // Get the MAAS_API_KEY from Jenkins credentials
+                    def maasApiKey = credentials('maas-api-key')
+
+                    // Check if a container is running with the name "maas_wol_container"
+                    def runningContainer = sh(script: "docker ps -q -f name=maas_wol_container", returnStdout: true).trim()
+
+                    if (runningContainer) {
+                        echo "Stopping and removing existing container..."
+                        // Stop and remove the container if it is running
+                        sh "docker stop maas_wol_container"
+                        sh "docker rm maas_wol_container"
+                    } else {
+                        echo "No running container found. Proceeding to start a new one."
+                    }
+
+                    // Run a new container with the updated image
+                    echo "Starting a new container with the updated image..."
+                    sh """
+                    docker run --network=host -e MAAS_API_KEY=${maasApiKey} -p 8080:8080 -v /home/user/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
+                    """
+                }
+            }
+        }
     }
 
     post {
