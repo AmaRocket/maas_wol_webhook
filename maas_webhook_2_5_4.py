@@ -270,4 +270,5 @@ def main():
 
 
 if __name__ == "__main__":
+    API_KEY = os.environ['MAAS_API_KEY']
     main()
