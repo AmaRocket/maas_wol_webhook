@@ -83,11 +83,11 @@ pipeline {
 
                     // Run a new container with the updated image
                     echo "Starting a new container with the updated image..."
-//                     withCredentials([string(credentialsId: 'maas-api-key', variable: 'MAAS_API_KEY')]) {
-//                         sh 'docker run -d --env MAAS_API_KEY=$MAAS_API_KEY  -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest  && echo $MAAS_API_KEY'
-//                     }
+                    withCredentials([string(credentialsId: 'maas-api-key', variable: 'MAAS_API_KEY')]) {
+                        sh 'docker run -d --env MAAS_API_KEY=$MAAS_API_KEY  -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest  && echo $MAAS_API_KEY'
+                    }
 
-                    sh 'docker run -d --network=host --env-file /etc/docker/maas_api_key.env -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
+//                     sh 'docker run -d --network=host --env-file /etc/docker/maas_api_key.env -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
                 }
             }
         }

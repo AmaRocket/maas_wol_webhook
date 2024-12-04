@@ -40,6 +40,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger("HTTPWoL")
 
+api_key = os.getenv("MAAS_API_KEY")
+if not api_key:
+    raise ValueError("MAAS_API_KEY environment variable is not set")
+print(f"Using MAAS_API_KEY: {api_key}")
+
+
 
 class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
