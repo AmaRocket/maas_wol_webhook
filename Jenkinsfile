@@ -40,6 +40,20 @@ pipeline {
             steps {
                 dir('/var/lib/jenkins/workspace/WOL') {
                     script {
+                        // Define Docker image name and tag
+                        def imageName = 'maas-wol-webhook'
+
+                        // Check if the image exists locally
+                        echo "Checking if Docker image '${imageName}' exists..."
+                        def imageExists = sh(script: "docker images -a -q ${imageName}", returnStdout: true).trim()
+
+                        // If the image exists, remove it
+                        if (imageExists) {
+                            echo "Docker image '${imageName}' exists. Removing it..."
+                            sh "docker rmi -f ${imageName}"
+                        } else {
+                            echo "Docker image '${imageName}' does not exist. Proceeding to build..."
+                        }
                         // Create a Docker image
                         sh '''
                         docker build -t maas-wol-webhook:latest .
