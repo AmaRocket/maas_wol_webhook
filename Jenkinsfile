@@ -56,13 +56,13 @@ pipeline {
                     def maasApiKey = credentials('maas-api-key')
 
                     // Check if a container is running with the name "maas_wol_container"
-                    def runningContainer = sh(script: "docker ps -q -f name=maas_wol_container", returnStdout: true).trim()
+                    def runningContainer = sh(script: "docker ps -a -q -f name=maas_wol_container", returnStdout: true).trim()
 
                     if (runningContainer) {
                         echo "Stopping and removing existing container..."
                         // Stop and remove the container if it is running
                         sh "docker stop maas_wol_container"
-                        sh "docker rm maas_wol_container"
+                        sh "docker rm -f maas_wol_container"
                     } else {
                         echo "No running container found. Proceeding to start a new one."
                     }
