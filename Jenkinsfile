@@ -43,13 +43,6 @@ pipeline {
             }
         }
 
-        stage('Debug Environment') {
-            steps {
-                sh 'env'
-                sh 'which docker'
-            }
-        }
-
 
         stage('Clean up Dangling Images') {
             steps {
@@ -87,30 +80,30 @@ pipeline {
                 }
             }
 
-        stage('Check and Restart Container') {
-                steps {
-                    script {
-                        def runningContainer = sh(script: "docker ps -a -q -f name=maas_wol_container", returnStdout: true).trim()
+    stage('Check and Restart Container') {
+            steps {
+                script {
+                    def runningContainer = sh(script: "docker ps -a -q -f name=maas_wol_container", returnStdout: true).trim()
 
-                        if (runningContainer) {
-                            echo "Stopping and removing existing container..."
-                            // Stop and remove the container if it is running
-                            sh "docker stop maas_wol_container"
-                            sh "docker rm -f maas_wol_container"
-                        } else {
-                            echo "No running container found. Proceeding to start a new one."
-                        }
-
-                        // Run a new container with the updated image
-                        echo "Starting a new container with the updated image..."
-                        withCredentials([string(credentialsId: 'maas-api-key', variable: 'MAAS_API_KEY')]) {
-                        sh 'export MAAS_API_KEY=$MAAS_API_KEY && docker run -d --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook  && echo $MAAS_API_KEY'
-                        }
-    //                     sh 'docker run -d --network=host --env-file /etc/docker/maas_api_key.env -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
+                    if (runningContainer) {
+                        echo "Stopping and removing existing container..."
+                        // Stop and remove the container if it is running
+                        sh "docker stop maas_wol_container"
+                        sh "docker rm -f maas_wol_container"
+                    } else {
+                        echo "No running container found. Proceeding to start a new one."
                     }
+
+                    // Run a new container with the updated image
+                    echo "Starting a new container with the updated image..."
+                    withCredentials([string(credentialsId: 'maas-api-key', variable: 'MAAS_API_KEY')]) {
+                    sh 'export MAAS_API_KEY=$MAAS_API_KEY && docker run -d --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook  && echo $MAAS_API_KEY'
+                    }
+//                     sh 'docker run -d --network=host --env-file /etc/docker/maas_api_key.env -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
                 }
             }
         }
+    }
 
     post {
         success {
