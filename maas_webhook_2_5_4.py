@@ -130,6 +130,10 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
 
     def do_GET(self):
+        if self.path == "/health":
+            self._health_check()
+            return
+
         if not self._authenticate():
             return
         m = GET_REGEX.search(self.path)
@@ -149,6 +153,15 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
             logger.info(f"Status check for MAC {m.group('MAC')}: {status}")
         else:
             self._bad_path()
+
+    def _health_check(self):
+        """
+        Handles health check requests from HAProxy.
+        """
+        self.send_response(http.client.OK)
+        self.end_headers()
+        self.wfile.write(b"OK\n")
+        logger.info("Health check successful")
 
     def _start(self, mac_address):
         global machine_status, broadcast_ip, broadcast_port
