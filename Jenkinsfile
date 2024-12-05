@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        MAAS_API_KEY = credentials('maas-api-key') // Stored as 'consumer_key,token_key,token_secret'
+        MAAS_API_KEY = credentials('maas-api-key')
     }
 
     stages {
@@ -17,12 +17,10 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Install required dependencies using pip
                     sh '''
                     sudo apt update
                     sudo apt install -y python3 python3-pip
                     pip3 install pytest
-                    pip3 install python-dotenv
                     pip3 install -r requirements.txt
                     '''
                 }
@@ -33,11 +31,8 @@ pipeline {
             steps {
                     dir('/var/lib/jenkins/workspace/WOL/tests/') {
                     script {
-                        // Run tests using pytest
                         sh 'chmod +x tests.py'
                         sh 'python3 tests.py'
-                        sh 'export MAAS_API_KEY=$MAAS_API_KEY'
-
                     }
                 }
             }
@@ -96,9 +91,8 @@ pipeline {
                     // Run a new container with the updated image
                     echo "Starting a new container with the updated image..."
                     withCredentials([string(credentialsId: 'maas-api-key', variable: 'MAAS_API_KEY')]) {
-                    sh 'export MAAS_API_KEY=$MAAS_API_KEY && docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook  && echo $MAAS_API_KEY'
+                    sh 'export MAAS_API_KEY=$MAAS_API_KEY && docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
                     }
-//                     sh 'docker run -d --network=host --env-file /etc/docker/maas_api_key.env -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
                 }
             }
         }
