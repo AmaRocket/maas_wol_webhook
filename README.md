@@ -43,7 +43,7 @@ The service can be run in a Docker container. Here's how to set up the Docker en
 
 3. **Run the Docker container**:
     ```bash
-    docker run --network=host -e MAAS_API_KEY='Your:API:Key' -v /home/user/.ssh:/root/.ssh --name maas_wol_container maas_webhook 
+    docker run --network=host -e MAAS_API_KEY='Your:API:Key' -v /home/user/.ssh:/root/.ssh --name maas_wol_container maas_webhook:latest 
     ```
 
 ### Environment Variables
@@ -60,13 +60,13 @@ echo "MAAS_API_KEY=your_api_key_here" | sudo tee /etc/docker/maas_api_key.env
 sudo chmod 600 /etc/docker/maas_api_key.env
 ```
 ```bash
-sudo docker run --network=host --env-file /etc/docker/maas_api_key.env -p 8080:8080 -v /home/user/.ssh:/root/.ssh --name maas_wol_container maas_webhook
+sudo docker run --network=host --env-file /etc/docker/maas_api_key.env -p 8181:8181 -v /home/user/.ssh:/root/.ssh --name maas_wol_container maas_webhook
 ```
 
 
 ### Exposed Ports
 
-- **8080**: The port on which the service will be available.
+- **8181**: The port on which the service will be available.
 
 ## API Usage
 
@@ -85,7 +85,7 @@ sudo docker run --network=host --env-file /etc/docker/maas_api_key.env -p 8080:8
 
 #### Example:
 ```bash
-curl -X GET "http://localhost:8080/00:14:22:01:23:45"
+curl -X GET "http://localhost:8181/00:14:22:01:23:45"
 ```
 
 `POST /{MAC_ADDRESS}/?op=start`
@@ -95,7 +95,7 @@ curl -X GET "http://localhost:8080/00:14:22:01:23:45"
 
 #### Example:
 ```bash
-curl -X POST "http://localhost:8080/00:14:22:01:23:45/?op=start"
+curl -X POST "http://localhost:8181/00:14:22:01:23:45/?op=start"
 ```
 
 
@@ -106,7 +106,7 @@ curl -X POST "http://localhost:8080/00:14:22:01:23:45/?op=start"
 
 #### Example:
 ```bash
-curl -X POST "http://localhost:8080/00:14:22:01:23:45/?op=stop"
+curl -X POST "http://localhost:8181/00:14:22:01:23:45/?op=stop"
 ```
 
 ## Configuration
@@ -128,3 +128,36 @@ Logs are stored at /var/log/maas/wol/wol_service.log. You can check the log file
 
 - If the service fails to send the WoL packet, ensure that the MAC address is correct and the machine is on the same network.
 - If SSH shutdown commands fail, verify that the machine allows SSH access and that the correct SSH key is used.
+
+## Jenkins CI/CD Pipeline Setup
+This project includes a Jenkins pipeline configuration for automating the testing, building, and deployment process. Below are the main stages of the pipeline:
+**Setup**
+- **Jenkins Credentials:** Store the MAAS API key securely in Jenkins Credentials Manager for safe access during the pipeline execution.<br />
+-- Go to Jenkins Dashboard > Manage Jenkins > Manage Credentials > (select a domain or use global) > Add Credentials <br />
+-- Choose Secret text and enter the MAAS API key. Label it maas-api-key.
+- **GitHub Repository Access:** Jenkins needs access to your GitHub repository (either via a personal access token or SSH keys).
+
+
+**Steps in the pipeline:**
+
+- **Clone Repository:**    Pulls the latest code from the GitHub repository.
+- **Install Dependencies:**  Installs necessary dependencies using pip from requirements.txt.
+- **Run Tests:**  Executes unit tests using pytest to ensure that the code works as expected.
+- **Build Docker Image:**  Builds a Docker image from the latest code. The image is tagged with maas-wol-webhook:latest.
+- **Check and Restart Container:**  
+-- Checks if the Docker container is running, stops and removes it if needed, and starts a new container with the updated image.<br />
+-- The MAAS API Token is injected into the container using Jenkins credentials securely stored in the Jenkins Credentials Manager. This ensures that sensitive information like tokens is handled securely.
+
+## Handling Sensitive Data (API Keys and Tokens)
+ - **Credentials:** We recommend storing sensitive data like the MAAS API key in Jenkins Credentials or environment variables to ensure secure access.
+ - In the pipeline, the API key is retrieved using:
+```bash
+withCredentials([string(credentialsId: 'maas-api-key', variable: 'MAAS_API_KEY')]) {
+    sh 'docker run -d --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
+}
+```
+- This method ensures that the API key is kept secure and is injected directly into the container environment at runtime, preventing exposure in logs or source code.
+
+##  Important Considerations
+- **Docker Configuration:** Ensure that Docker is installed and accessible on the Jenkins machine. The --network=host flag should be used for the Docker container when running the webhook service, as it allows the container to share the host network(E.g when MAAS is private network).
+- **Security Best Practices:** Do not hard-code sensitive information in the repository. Always use Jenkins credentials or environment variables to handle keys and tokens securely.
