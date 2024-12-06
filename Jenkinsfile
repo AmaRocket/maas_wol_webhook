@@ -110,7 +110,7 @@ pipeline {
                         export MAAS_API_KEY='$MAAS_API_KEY'
                         docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
                         docker image prune -f
-                    EOF
+                    << EOF
                     '''
                 }
             }
