@@ -79,7 +79,7 @@ pipeline {
         stage('Test Region Connection via SSH'){
             steps {
                 sh '''
-                ssh -i /var/lib/jenkins/.ssh/id_ed25519 -o StrictHostKeyChecking=no localadmin@10.34.64.2 << EOF
+                ssh -i /home/localadmin/.ssh/id_ed25519 -o StrictHostKeyChecking=no localadmin@10.34.64.2 << EOF
                 echo "SSH connection successful!"
                 EOF
                 '''
