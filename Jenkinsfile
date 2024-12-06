@@ -100,6 +100,7 @@ pipeline {
                         echo "Connection Successful!"
                         cd /var/lib/jenkins/workspace/WOL || exit 1
                         git config --global --add safe.directory /var/lib/jenkins/workspace/WOL
+                        sudo -u jenkins git stash
                         sudo -u jenkins git pull origin main
                         docker image prune -f
                         docker rmi -f maas-wol-webhook || true
