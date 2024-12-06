@@ -94,27 +94,21 @@ pipeline {
         stage('Test Region Connection via SSH') {
             steps {
                 sshagent(['rack_server_ssh_credentials']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 << EOF
-                        set -e  # Stop script if any command fails
-                        echo "Connection Successful!"
-                        cd /var/lib/jenkins/workspace/WOL || exit 1
-                        git config --global --add safe.directory /var/lib/jenkins/workspace/WOL
-                        sudo -u jenkins git stash
-                        sudo -u jenkins git pull origin main
-                        docker image prune -f
-                        docker rmi -f maas-wol-webhook || true
-                        docker build -t maas-wol-webhook:latest .
-                        docker stop maas_wol_container || true
-                        docker rm -f maas_wol_container || true
-                        export MAAS_API_KEY='$MAAS_API_KEY'
-                        docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
-                        docker image prune -f
-                        << EOF'''
+                    sh 'ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 "set -e && echo Connection Successful!"'
+                    sh 'ssh localadmin@10.34.64.2 "cd /var/lib/jenkins/workspace/WOL && git config --global --add safe.directory /var/lib/jenkins/workspace/WOL"'
+                    sh 'ssh localadmin@10.34.64.2 "sudo -u jenkins git stash"'
+                    sh 'ssh localadmin@10.34.64.2 "sudo -u jenkins git pull origin main"'
+                    sh 'ssh localadmin@10.34.64.2 "docker image prune -f"'
+                    sh 'ssh localadmin@10.34.64.2 "docker rmi -f maas-wol-webhook || true"'
+                    sh 'ssh localadmin@10.34.64.2 "docker build -t maas-wol-webhook:latest ."'
+                    sh 'ssh localadmin@10.34.64.2 "docker stop maas_wol_container || true"'
+                    sh 'ssh localadmin@10.34.64.2 "docker rm -f maas_wol_container || true"'
+                    sh 'ssh localadmin@10.34.64.2 "export MAAS_API_KEY=$MAAS_API_KEY && docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest"'
+                    sh 'ssh localadmin@10.34.64.2 "docker image prune -f"'
                 }
             }
         }
-    }
+
 
 //         stage('Test Region Connection via SSH'){
 //             steps {
