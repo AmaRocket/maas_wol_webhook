@@ -45,6 +45,19 @@ pipeline {
         stage('Build Docker Image on Rack Controller') {
             steps {
                 dir('/var/lib/jenkins/workspace/WOL') {
+                    def imageName = 'maas-wol-webhook'
+                    // Check if the image exists locally
+                    echo "Checking if Docker image '${imageName}' exists..."
+                    def imageExists = sh(script: "docker images -a -q ${imageName}", returnStdout: true).trim()
+
+                    // If the image exists, remove it
+                    if (imageExists) {
+                        echo "Docker image '${imageName}' exists. Removing it..."
+                        sh "docker rmi -f ${imageName}"
+                    } else {
+                        echo "Docker image '${imageName}' does not exist. Proceeding to build..."
+                    }
+                    // Create a Docker image
                     sh 'docker build -t maas-wol-webhook:latest .'
                 }
             }
@@ -84,6 +97,7 @@ pipeline {
                         cd /var/lib/jenkins/workspace/WOL
                         git pull
                         docker image prune -f
+                        docker rmi -f maas-wol-webhook
                         docker build -t maas-wol-webhook:latest .
                         docker stop maas_wol_container || true
                         docker rm -f maas_wol_container || true
