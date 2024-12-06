@@ -79,34 +79,24 @@ pipeline {
         stage('Test Region Connection via SSH'){
             steps {
                 sshagent(['rack_server_ssh_credentials']) {
-                    sh 'ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 "echo Connection Successful!"'
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 "echo Connection Successful!"
+                        cd /var/lib/jenkins/workspace/WOL
+                        git pull
+                        docker image prune -f
+                        docker build -t maas-wol-webhook:latest .
+                        docker stop maas_wol_container || true
+                        docker rm -f maas_wol_container || true
+                        export MAAS_API_KEY=$MAAS_API_KEY
+                        docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
+                        docker image prune -f
+                    '''
                     }
 
                 }
             }
         }
 
-
-//         stage('Deploy to Region Controller') {
-//             steps {
-//                 sshagent(['rack_server_ssh_credentials']) {
-//                     sh '''
-//                     ssh -i -o StrictHostKeyChecking=no localadmin@10.34.64.2 << EOF
-//                         cd /var/lib/jenkins/workspace/WOL
-//                         git pull
-//                         docker image prune -f
-//                         docker build -t maas-wol-webhook:latest .
-//                         docker stop maas_wol_container || true
-//                         docker rm -f maas_wol_container || true
-//                         export MAAS_API_KEY=$MAAS_API_KEY
-//                         docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
-//                         docker image prune -f
-//                     EOF
-//                     '''
-//                 }
-//             }
-//         }
-//     }
 
     post {
         success {
