@@ -99,6 +99,7 @@ pipeline {
                         set -e  # Stop script if any command fails
                         echo "Connection Successful!"
                         cd /var/lib/jenkins/workspace/WOL || exit 1
+                        git config --global --add safe.directory /var/lib/jenkins/workspace/WOL
                         git pull
                         docker image prune -f
                         docker rmi -f maas-wol-webhook || true
