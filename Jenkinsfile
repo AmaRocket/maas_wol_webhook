@@ -78,7 +78,7 @@ pipeline {
 
         stage('Test Region Connection via SSH'){
             steps {
-                sshagent(['localadmin_ssh_credentials']) {
+                sshagent(['rack_server_ssh_credentials']) {
                     sh 'ssh-add -l'
                     echo 'Connection completed successfully'
                 }
