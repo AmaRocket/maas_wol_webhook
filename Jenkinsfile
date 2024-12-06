@@ -86,7 +86,7 @@ pipeline {
                 }
             }
         }
-    }
+
 
 //         stage('Deploy to Region Controller') {
 //             steps {
