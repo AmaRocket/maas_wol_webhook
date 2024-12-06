@@ -78,9 +78,11 @@ pipeline {
 
         stage('Test Region Connection via SSH'){
             steps {
-                sshagent(['rack_server_ssh_credentials']) {
-                    sh 'ssh-add -l'
-                    echo 'Connection completed successfully'
+                sh '''
+                ssh -i /var/lib/jenkins/.ssh/id_ed25519 -o StrictHostKeyChecking=no localadmin@10.34.64.2 << EOF
+                echo "SSH connection successful!"
+                EOF
+                '''
                 }
             }
         }
