@@ -123,7 +123,7 @@ pipeline {
                     sh '''
                     ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 << 'ENDSSH'
                         set -e # Stop if anything goes wrong
-                        "echo Connection Successful!"
+                        echo Connection Successful!
                         cd /var/lib/jenkins/workspace/WOL
                         echo pwd
                         git config --global --add safe.directory /var/lib/jenkins/workspace/WOL
