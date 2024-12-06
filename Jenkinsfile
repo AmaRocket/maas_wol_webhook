@@ -108,6 +108,7 @@ pipeline {
                 }
             }
         }
+    }
 
 
 //         stage('Test Region Connection via SSH'){
