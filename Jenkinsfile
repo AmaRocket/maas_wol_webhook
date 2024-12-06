@@ -86,9 +86,10 @@ pipeline {
                         docker image prune -f
                         docker build -t maas-wol-webhook:latest .
                         docker stop maas_wol_container || true
-                        docker rm maas_wol_container || true
+                        docker rm -f maas_wol_container || true
                         export MAAS_API_KEY=$MAAS_API_KEY
                         docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
+                        docker image prune -f
                     EOF
                     '''
                 }
