@@ -69,7 +69,7 @@ pipeline {
 
         stage('Deploy to Region Controller') {
             steps {
-                sshagent(['region_server_ssh_credentials']) {
+                sshagent(['rack_server_ssh_credentials']) {
                     sh '''
                     ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 << EOF
                         cd /home/localadmin/WOL
