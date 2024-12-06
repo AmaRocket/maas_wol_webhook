@@ -78,7 +78,7 @@ pipeline {
 
         stage('Test Region Connection via SSH'){
             steps {
-                sshagent(['your-credential-id']) {
+                sshagent(['rack_server_ssh_credentials']) {
                     sh 'ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 "echo Connection Successful!"'
                     }
 
