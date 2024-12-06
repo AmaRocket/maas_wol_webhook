@@ -95,7 +95,7 @@ pipeline {
             steps {
                 sshagent(['rack_server_ssh_credentials']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 <<EOF
+                    ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 <<- _EOF_ || error_exit "Failed to execute while doing SSH"
                         set -e  # Stop script if any command fails
                         echo "Connection Successful!"
                         cd /var/lib/jenkins/workspace/WOL || exit 1
@@ -110,8 +110,7 @@ pipeline {
                         export MAAS_API_KEY='$MAAS_API_KEY'
                         docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
                         docker image prune -f
-                    << EOF
-                    '''
+                        _EOF_ '''
                 }
             }
         }
