@@ -91,31 +91,6 @@ pipeline {
             }
         }
 
-//         stage('Test Region Connection via SSH') {
-//             steps {
-//                 sshagent(['rack_server_ssh_credentials']) {
-//
-//                     sh 'ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 << EOF'
-//                     sh 'set -e  # Stop script if any command fails'
-//                     sh 'echo "Connection Successful!"'
-//                     sh 'cd /var/lib/jenkins/workspace/WOL || exit 1'
-//                     sh 'echo pwd'
-// //                     sh 'git config --global --add safe.directory /var/lib/jenkins/workspace/WOL'
-//                     sh 'sudo -u jenkins git stash'
-//                     sh 'sudo -u jenkins git pull origin main'
-//                     sh 'docker image prune -f'
-//                     sh 'docker rmi -f maas-wol-webhook'
-//                     sh 'docker build -t maas-wol-webhook:latest .'
-//                     sh 'docker stop maas_wol_container'
-//                     sh 'docker rm -f maas_wol_container'
-//                     sh 'export MAAS_API_KEY="$MAAS_API_KEY"'
-//                     sh 'docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest'
-//                     sh 'docker image prune -f'
-//
-//                 }
-//             }
-//         }
-//     }
 
         stage('Test Region Connection via SSH'){
             steps {
@@ -138,7 +113,6 @@ pipeline {
                         docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
                         docker image prune -f
                         << EOF
-                    EOF
                     '''
                     }
 
