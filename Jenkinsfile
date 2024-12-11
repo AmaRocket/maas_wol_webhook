@@ -74,12 +74,21 @@ pipeline {
                     if (runningContainer) {
                         echo "Stopping and removing existing container..."
                         // Stop and remove the container if it is running
-                        sh "docker stop maas_wol_container"
-                        sh "docker rm -f maas_wol_container"
+                        sh "docker stop -t 10 maas_wol_container || true"
+                        sh "docker rm -f maas_wol_container || true"
                         sh "docker image prune -f"
                     } else {
                         echo "No running container found. Proceeding to start a new one."
                     }
+
+                    echo "Checking if port 8181 is free..."
+                    sh '''
+                    PORT=8181
+                    if netstat -tuln | grep -q ":$PORT "; then
+                        echo "Port $PORT is already in use. Stopping process..."
+                        fuser -k $PORT/tcp || true
+                    fi
+                    '''
 
                     withCredentials([string(credentialsId: 'maas-api-key', variable: 'MAAS_API_KEY')]) {
                         sh '''

@@ -158,10 +158,17 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
         """
         Handles health check requests from HAProxy.
         """
-        self.send_response(http.client.OK)
-        self.end_headers()
-        self.wfile.write(b"OK\n")
-        logger.info("Health check successful")
+        try:
+            self.send_response(http.client.OK)
+            self.end_headers()
+            self.wfile.write(b"OK\n")
+            logger.info("Health check successful")
+        except Exception as e:
+            self.send_response(503)
+            self.end_headers()
+            self.wfile.write(f"Error: {e}".encode("utf-8"))
+            logger.error(f"Error: {e}")
+
 
     def _start(self, mac_address):
         global machine_status, broadcast_ip, broadcast_port
