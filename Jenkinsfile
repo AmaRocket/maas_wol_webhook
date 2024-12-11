@@ -109,6 +109,7 @@ pipeline {
                 script {
                     // Restart HAProxy on Rack Controller
                     sh 'sudo systemctl start haproxy'
+                    sh 'echo HAProxy was restarted'
 
                     // Deploy On Region Controller via SSH
                     sshagent(['rack_server_ssh_credentials']) {
