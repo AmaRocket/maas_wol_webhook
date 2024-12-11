@@ -163,6 +163,9 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b"OK\n")
             logger.info("Health check successful")
+        except (ConnectionResetError, BrokenPipeError):
+            # Log the error and exit gracefully
+            logger.warning("Client disconnected prematurely during health check.")
         except Exception as e:
             self.send_response(503)
             self.end_headers()
