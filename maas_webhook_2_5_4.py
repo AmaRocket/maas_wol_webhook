@@ -130,29 +130,32 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
 
     def do_GET(self):
-        if self.path == "/health":
-            self._health_check()
-            return
+        try:
+            if self.path == "/health":
+                self._health_check()
+                return
 
-        if not self._authenticate():
-            return
-        m = GET_REGEX.search(self.path)
-        if m:
-            global machine_status
-            mac_address = m.group("MAC")
-            status = machine_status.get(m.group("MAC"), "unknown")
-            if self._check_status(mac_address):
-                status = "running"
-                machine_status[mac_address] = "running"
+            if not self._authenticate():
+                return
+            m = GET_REGEX.search(self.path)
+            if m:
+                global machine_status
+                mac_address = m.group("MAC")
+                status = machine_status.get(m.group("MAC"), "unknown")
+                if self._check_status(mac_address):
+                    status = "running"
+                    machine_status[mac_address] = "running"
+                else:
+                    status = "stopped"
+                    machine_status[mac_address] = "stopped"
+                self.send_response(http.client.OK)
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": status}).encode() + b"\n")
+                logger.info(f"Status check for MAC {m.group('MAC')}: {status}")
             else:
-                status = "stopped"
-                machine_status[mac_address] = "stopped"
-            self.send_response(http.client.OK)
-            self.end_headers()
-            self.wfile.write(json.dumps({"status": status}).encode() + b"\n")
-            logger.info(f"Status check for MAC {m.group('MAC')}: {status}")
-        else:
-            self._bad_path()
+                self._bad_path()
+        except Exception as e:
+            logger.error(f"Error in do_GET method with MAC: {mac_address}... ")
 
     def _health_check(self):
         """
