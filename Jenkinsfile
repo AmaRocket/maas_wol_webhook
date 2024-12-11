@@ -96,7 +96,7 @@ pipeline {
                     withCredentials([string(credentialsId: 'maas-api-key', variable: 'MAAS_API_KEY')]) {
                         sh '''
                         export MAAS_API_KEY=$MAAS_API_KEY
-                        docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
+                        docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container --restart unless-stopped maas-wol-webhook:latest
                         '''
                     }
                 }
@@ -127,7 +127,7 @@ pipeline {
                             docker stop maas_wol_container || true
                             docker rm -f maas_wol_container || true
                             export MAAS_API_KEY=$MAAS_API_KEY
-                            docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
+                            docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container --restart unless-stopped maas-wol-webhook:latest
                             docker image prune -f
                             << EOF
                         '''
