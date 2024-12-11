@@ -69,6 +69,9 @@ pipeline {
             steps {
                 script {
 
+                    // Stop HAProxy temporarily
+                    sh 'sudo systemctl stop haproxy'
+
                     def runningContainer = sh(script: "docker ps -a -q -f name=maas_wol_container", returnStdout: true).trim()
 
                     if (runningContainer) {
@@ -103,28 +106,33 @@ pipeline {
 
         stage('Test Region Connection via SSH'){
             steps {
-                sshagent(['rack_server_ssh_credentials']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 << EOF
-                        set -e # Stop if anything goes wrong
-                        echo Connection Successful!
-                        cd /var/lib/jenkins/workspace/WOL
-                        echo pwd
-                        git config --global --add safe.directory /var/lib/jenkins/workspace/WOL
-                        sudo -u jenkins git stash
-                        sudo -u jenkins git pull origin main
-                        docker image prune -f
-                        docker rmi -f maas-wol-webhook
-                        docker build -t maas-wol-webhook:latest .
-                        docker stop maas_wol_container || true
-                        docker rm -f maas_wol_container || true
-                        export MAAS_API_KEY=$MAAS_API_KEY
-                        docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
-                        docker image prune -f
-                        << EOF
-                    '''
-                    }
+                script {
+                    // Restart HAProxy on Rack Controller
+                    sh 'sudo systemctl start haproxy'
 
+                    // Deploy On Region Controller via SSH
+                    sshagent(['rack_server_ssh_credentials']) {
+                        sh '''
+                        ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 << EOF
+                            set -e # Stop if anything goes wrong
+                            echo Connection Successful!
+                            cd /var/lib/jenkins/workspace/WOL
+                            echo pwd
+                            git config --global --add safe.directory /var/lib/jenkins/workspace/WOL
+                            sudo -u jenkins git stash
+                            sudo -u jenkins git pull origin main
+                            docker image prune -f
+                            docker rmi -f maas-wol-webhook
+                            docker build -t maas-wol-webhook:latest .
+                            docker stop maas_wol_container || true
+                            docker rm -f maas_wol_container || true
+                            export MAAS_API_KEY=$MAAS_API_KEY
+                            docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container maas-wol-webhook:latest
+                            docker image prune -f
+                            << EOF
+                        '''
+                        }
+                    }
                 }
             }
         }
