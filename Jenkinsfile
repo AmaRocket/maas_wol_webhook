@@ -109,7 +109,7 @@ pipeline {
                 script {
                     // Restart HAProxy on Rack Controller
                     sh 'sudo systemctl start haproxy'
-                    sh 'echo HAProxy was restarted'
+                    sh 'echo HAProxy has been restarted'
 
                     // Deploy On Region Controller via SSH
                     sshagent(['rack_server_ssh_credentials']) {
@@ -118,7 +118,7 @@ pipeline {
                             set -e # Stop if anything goes wrong
                             echo Connection Successful!
                             cd /var/lib/jenkins/workspace/WOL
-                            echo pwd
+                            pwd
                             git config --global --add safe.directory /var/lib/jenkins/workspace/WOL
                             sudo -u jenkins git stash
                             sudo -u jenkins git pull origin main
