@@ -7,15 +7,19 @@ pipeline {
 
     stages {
         stage('Clone Repository or Update on Rack Controller') {
-            script {
-                if (fileExists('.git')) {
-                    sh 'git pull origin main'
-                } else {
-                    git branch: 'main', url: 'https://github.com/AmaRocket/maas_wol_webhook.git'
+            steps {
+                dir('/var/lib/jenkins/workspace/WOL') {
+                    script {
+                        if (fileExists('.git')) {
+                            sh 'git pull origin main'
+                        } else {
+                            git branch: 'main', url: 'https://github.com/AmaRocket/maas_wol_webhook.git'
+                        }
+                     }
                 }
             }
         }
-    }
+
 
         stage('Install Dependencies') {
             steps {
