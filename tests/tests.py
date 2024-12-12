@@ -67,6 +67,6 @@ class TestHTTPWoL(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-    print("Tests are running")
+    print("Tests are started")
 
 
