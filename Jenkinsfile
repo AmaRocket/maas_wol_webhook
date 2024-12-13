@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         MAAS_API_KEY = credentials('maas-api-key')
-        REGION_CONTROLLER_IP = credentials('region-controller-ip')
+        REGION_CONTROLLER_IP = credentials('REGION_CONTROLLER_IP')
     }
 
     stages {
