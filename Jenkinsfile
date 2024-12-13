@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         MAAS_API_KEY = credentials('maas-api-key')
+        REGION_CONTROLLER_IP = credentials('region-controller-ip')
     }
 
     stages {
@@ -27,7 +28,7 @@ pipeline {
                 script {
                     sh '''
                     sudo apt update
-                    sudo apt install -y python3 python3-pip
+                    sudo apt install -y python3-pip
                     pip3 install pytest
                     pip3 install -r requirements.txt
                     '''
@@ -122,7 +123,7 @@ pipeline {
                     // Deploy On Region Controller via SSH
                     sshagent(['rack_server_ssh_credentials']) {
                         sh '''
-                        ssh -o StrictHostKeyChecking=no localadmin@10.34.64.2 << EOF
+                        ssh -o StrictHostKeyChecking=no localadmin@${REGION_CONTROLLER_IP} << EOF
                             set -e # Stop if anything goes wrong
                             echo Connection Successful!
                             cd /var/lib/jenkins/workspace/WOL
