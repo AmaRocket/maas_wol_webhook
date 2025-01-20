@@ -17,20 +17,21 @@ pipeline {
                         } else {
                             git branch: 'main', url: 'https://github.com/AmaRocket/maas_wol_webhook.git'
                         }
-                     }
+                    }
                 }
             }
         }
-
 
         stage('Install Dependencies') {
             steps {
                 script {
                     sh '''
                     sudo apt update
-                    sudo apt install -y python3-pip
-                    pip3 install --break-system-packages pytest
-                    pip3 install -r --break-system-packages requirements.txt
+                    sudo apt install -y python3-pip python3-venv  # Ensure virtualenv is available
+                    python3 -m venv /var/lib/jenkins/workspace/WOL/venv  # Create virtual environment
+                    source /var/lib/jenkins/workspace/WOL/venv/bin/activate  # Activate virtual environment
+                    pip install --upgrade pip  # Upgrade pip to latest version
+                    pip install -r requirements.txt  # Install dependencies from requirements.txt
                     '''
                 }
             }
@@ -39,8 +40,11 @@ pipeline {
         stage('Run Tests on Rack Controller') {
             steps {
                 dir('/var/lib/jenkins/workspace/WOL/tests/') {
-                    sh 'chmod +x tests.py'
-                    sh 'python3 tests.py'
+                    sh '''
+                    source /var/lib/jenkins/workspace/WOL/venv/bin/activate  # Activate virtual environment
+                    chmod +x tests.py
+                    python3 tests.py
+                    '''
                 }
             }
         }
@@ -56,18 +60,15 @@ pipeline {
                 dir('/var/lib/jenkins/workspace/WOL') {
                     script {
                         def imageName = 'maas-wol-webhook'
-                        // Check if the image exists locally
                         echo "Checking if Docker image '${imageName}' exists..."
                         def imageExists = sh(script: "docker images -a -q ${imageName}", returnStdout: true).trim()
 
-                        // If the image exists, remove it
                         if (imageExists) {
                             echo "Docker image '${imageName}' exists. Removing it..."
                             sh "docker rmi -f ${imageName}"
                         } else {
                             echo "Docker image '${imageName}' does not exist. Proceeding to build..."
                         }
-                        // Create a Docker image
                         sh 'docker build -t maas-wol-webhook:latest .'
                     }
                 }
@@ -77,15 +78,12 @@ pipeline {
         stage('Restart Container on Rack Controller') {
             steps {
                 script {
-
-                    // Stop HAProxy temporarily
                     sh 'sudo systemctl stop haproxy'
 
                     def runningContainer = sh(script: "docker ps -a -q -f name=maas_wol_container", returnStdout: true).trim()
 
                     if (runningContainer) {
                         echo "Stopping and removing existing container..."
-                        // Stop and remove the container if it is running
                         sh "docker stop -t 10 maas_wol_container || true"
                         sh "docker rm -f maas_wol_container || true"
                         sh "docker image prune -f"
@@ -112,11 +110,9 @@ pipeline {
             }
         }
 
-
-        stage('Test Region Connection via SSH'){
+        stage('Test Region Connection via SSH') {
             steps {
                 script {
-                    // Deploy On Region Controller via SSH test
                     sshagent(['rack_server_ssh_credentials']) {
                         sh '''
                         ssh -o StrictHostKeyChecking=no localadmin@${REGION_CONTROLLER_IP} << EOF
@@ -135,14 +131,13 @@ pipeline {
                             export MAAS_API_KEY=$MAAS_API_KEY
                             docker run -d --network=host --env MAAS_API_KEY=$MAAS_API_KEY -v /home/localadmin/.ssh:/root/.ssh --name maas_wol_container --restart unless-stopped maas-wol-webhook:latest
                             docker image prune -f
-                            << EOF
+                        EOF
                         '''
-                        }
                     }
                 }
             }
         }
-
+    }
 
     post {
         success {
