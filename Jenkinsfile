@@ -78,8 +78,6 @@ pipeline {
         stage('Restart Container on Rack Controller') {
             steps {
                 script {
-                    sh 'sudo systemctl stop haproxy'
-
                     def runningContainer = sh(script: "docker ps -a -q -f name=maas_wol_container", returnStdout: true).trim()
 
                     if (runningContainer) {
