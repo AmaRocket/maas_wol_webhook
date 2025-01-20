@@ -42,7 +42,7 @@ pipeline {
                 dir('/var/lib/jenkins/workspace/WOL/tests/') {
                     sh '''
                     . /var/lib/jenkins/workspace/WOL/venv/bin/activate
-                    chmod +x tests.py
+                    sudo chmod +x tests.py
                     python3 tests.py
                     '''
                 }
