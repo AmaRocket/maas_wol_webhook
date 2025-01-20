@@ -116,10 +116,6 @@ pipeline {
         stage('Test Region Connection via SSH'){
             steps {
                 script {
-                    // Restart HAProxy on Rack Controller
-                    sh 'sudo systemctl start haproxy'
-                    sh 'echo HAProxy has been restarted'
-
                     // Deploy On Region Controller via SSH
                     sshagent(['rack_server_ssh_credentials']) {
                         sh '''
