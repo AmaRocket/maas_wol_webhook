@@ -41,7 +41,7 @@ pipeline {
             steps {
                 dir('/var/lib/jenkins/workspace/WOL/tests/') {
                     sh '''
-                    source /var/lib/jenkins/workspace/WOL/venv/bin/activate  # Activate virtual environment
+                    . /var/lib/jenkins/workspace/WOL/venv/bin/activate  # Activate virtual environment
                     chmod +x tests.py
                     python3 tests.py
                     '''
