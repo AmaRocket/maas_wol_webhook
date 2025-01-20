@@ -115,7 +115,7 @@ pipeline {
                 script {
                     sshagent(['rack_server_ssh_credentials']) {
                         sh '''
-                        ssh -o StrictHostKeyChecking=no localadmin@${REGION_CONTROLLER_IP} << EOF
+                        ssh -o StrictHostKeyChecking=no localadmin@${REGION_CONTROLLER_IP} << 'EOF'
                             set -e # Stop if anything goes wrong
                             echo Connection Successful!
                             cd /var/lib/jenkins/workspace/WOL
