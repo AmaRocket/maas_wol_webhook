@@ -116,7 +116,7 @@ pipeline {
         stage('Test Region Connection via SSH'){
             steps {
                 script {
-                    // Deploy On Region Controller via SSH
+                    // Deploy On Region Controller via SSH test
                     sshagent(['rack_server_ssh_credentials']) {
                         sh '''
                         ssh -o StrictHostKeyChecking=no localadmin@${REGION_CONTROLLER_IP} << EOF
