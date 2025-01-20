@@ -29,8 +29,8 @@ pipeline {
                     sh '''
                     sudo apt update
                     sudo apt install -y python3-pip
-                    pip3 install pytest
-                    pip3 install -r requirements.txt
+                    pip3 install --break-system-packages pytest
+                    pip3 install -r --break-system-packages requirements.txt
                     '''
                 }
             }
