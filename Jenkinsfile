@@ -29,7 +29,7 @@ pipeline {
                     sudo apt update
                     sudo apt install -y python3-pip python3-venv  # Ensure virtualenv is available
                     python3 -m venv /var/lib/jenkins/workspace/WOL/venv  # Create virtual environment
-                    source /var/lib/jenkins/workspace/WOL/venv/bin/activate  # Activate virtual environment
+                    . /var/lib/jenkins/workspace/WOL/venv/bin/activate  # Activate virtual environment
                     pip install --upgrade pip  # Upgrade pip to latest version
                     pip install -r requirements.txt  # Install dependencies from requirements.txt
                     '''
