@@ -38,12 +38,12 @@ The service can be run in a Docker container. Here's how to set up the Docker en
 
 2. **Build the Docker image**:
     ```bash
-    docker build -t maas-wol-service .
+    docker build -t maas-wol-webhook:latest .
     ```
 
 3. **Run the Docker container**:
     ```bash
-    docker run --network=host -e MAAS_API_KEY='Your:API:Key' -v /home/user/.ssh:/root/.ssh --name maas_wol_container maas_webhook:latest 
+    docker run --network=host -e MAAS_API_KEY='Your:API:Key' -v /home/user/.ssh:/root/.ssh --name maas_wol_container --restart unless-stopped maas-wol-webhook:latest
     ```
 
 ### Environment Variables
