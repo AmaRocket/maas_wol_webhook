@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-//                     sudo apt update
+                    sudo apt update
                     sudo apt install -y python3-pip python3-venv
                     python3 -m venv /var/lib/jenkins/workspace/WOL/venv
                     . /var/lib/jenkins/workspace/WOL/venv/bin/activate
