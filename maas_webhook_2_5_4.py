@@ -80,14 +80,15 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
     def get_ip_from_api(self):
         system_id = self.headers.get("System_id")
-        # print(system_id)
+        logger.info(system_id)
+        API_IP = os.getenv("MAAS_API_URL")
         API_KEY = os.getenv("MAAS_API_KEY").split(":")  # API Key for dbisadmin user e.g
         if not API_KEY:
             raise ValueError("API key is not set. Please set the MAAS_API_KEY environment variable.")
         try:
             # Execute curl to get machine details and parse with jq
             curl_command = f"""
-            curl --header "Authorization: OAuth oauth_version=1.0, oauth_signature_method=PLAINTEXT, oauth_consumer_key={API_KEY[0]}, oauth_token={API_KEY[1]}, oauth_signature=&{API_KEY[2]}, oauth_nonce=$(uuid), oauth_timestamp=$(date +%s)" https://maas.dmi.unibas.ch/MAAS/api/2.0/machines/ | \
+            curl --header "Authorization: OAuth oauth_version=1.0, oauth_signature_method=PLAINTEXT, oauth_consumer_key={API_KEY[0]}, oauth_token={API_KEY[1]}, oauth_signature=&{API_KEY[2]}, oauth_nonce=$(uuid), oauth_timestamp=$(date +%s)" {API_IP} | \
             jq -r '[.[] | {{osystem_id: .system_id, ip_addresses: .ip_addresses[0], hostname: (.hostname + "." + .domain.name), mac_address: .interface_set[0].mac_address}}] | .[] | select(.osystem_id == "{system_id}") | .ip_addresses'
             """
 
@@ -192,7 +193,7 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
     def _stop(self, mac_address):
         target_ip = self.get_ip_from_api()
-        # print(target_ip)
+        logger.info(target_ip)
         ssh_user = "ubuntu"
         ssh_key_path = "/root/.ssh/id_ed25519.pub"
         connection_timeout = 3
@@ -201,6 +202,7 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
             logger.error(f"IP address not found for MAC {mac_address}")
             self.send_response(http.client.INTERNAL_SERVER_ERROR)
             self.end_headers()
+            logger.warning(target_ip)
             self.wfile.write(b"Failed to find IP address for the system!\n")
             return
 

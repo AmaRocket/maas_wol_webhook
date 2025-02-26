@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        MAAS_API_URL = credentials('maas_api_ip')
         MAAS_API_KEY = credentials('maas-api-key')
         REGION_CONTROLLER_IP = credentials('REGION_CONTROLLER_IP')
     }
