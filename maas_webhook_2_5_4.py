@@ -44,7 +44,10 @@ api_key = os.getenv("MAAS_API_KEY")
 if not api_key:
     print("MAAS_API_KEY environment variable is not set")
 print(f"Using MAAS_API_KEY: {api_key}")
-
+api_url = os.getenv("MAAS_API_URL")
+if not api_url:
+    print("MAAS_API_URL environment variable is not set")
+print(f"Using MAAS_API_URL: {api_url}")
 
 
 class HTTPWoL(http.server.SimpleHTTPRequestHandler):
@@ -80,9 +83,9 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
     def get_ip_from_api(self):
         system_id = self.headers.get("System_id")
-        # print(system_id)
-        API_KEY = os.getenv("MAAS_API_KEY").split(":")  # API Key for dbisadmin user e.g
+        logger.info(system_id)
         API_URL = os.getenv("MAAS_API_URL")
+        API_KEY = os.getenv("MAAS_API_KEY").split(":")  # API Key for user
         if not API_KEY:
             raise ValueError("API key is not set. Please set the MAAS_API_KEY environment variable.")
         try:
@@ -117,6 +120,7 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
     def _check_status(self, mac_address):
         try:
             ip_address = self.get_ip_from_api()
+            logger.info(ip_address)
             if ip_address and self._ping(ip_address):
                 # Update status if the machine is reachable
                 machine_status[mac_address] = "running"
@@ -193,7 +197,7 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
     def _stop(self, mac_address):
         target_ip = self.get_ip_from_api()
-        # print(target_ip)
+        logger.info(target_ip)
         ssh_user = "ubuntu"
         ssh_key_path = "/root/.ssh/id_ed25519.pub"
         connection_timeout = 3
@@ -202,6 +206,7 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
             logger.error(f"IP address not found for MAC {mac_address}")
             self.send_response(http.client.INTERNAL_SERVER_ERROR)
             self.end_headers()
+            logger.warning(target_ip)
             self.wfile.write(b"Failed to find IP address for the system!\n")
             return
 
