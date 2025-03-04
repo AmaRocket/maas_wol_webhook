@@ -99,7 +99,7 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
             result = subprocess.run(curl_command, shell=True, capture_output=True, text=True, check=True)
 
-            # Parse the output and get IP address
+
             ip_address = result.stdout.strip()
             logger.info(f"System ID: {system_id} -- IP: {ip_address}  \n")
             if not ip_address:
