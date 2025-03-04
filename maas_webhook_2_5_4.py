@@ -83,9 +83,11 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
     def get_ip_from_api(self):
         system_id = self.headers.get("System_id")
-        logger.info(system_id)
+        # logger.info(system_id)
         API_URL = os.getenv("MAAS_API_URL")
+        # logger.info(API_URL)
         API_KEY = os.getenv("MAAS_API_KEY").split(":")  # API Key for user
+        # logger.info(API_KEY)
         if not API_KEY:
             raise ValueError("API key is not set. Please set the MAAS_API_KEY environment variable.")
         try:
@@ -99,6 +101,7 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
             # Parse the output and get IP address
             ip_address = result.stdout.strip()
+            logger.info(f"System ID: {system_id} -- IP: {ip_address}  \n")
             if not ip_address:
                 logger.warning("No IP address found for the system ID provided.")
                 return None
