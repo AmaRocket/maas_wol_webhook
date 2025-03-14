@@ -1,8 +1,5 @@
 pipeline {
-    agent {
-        label 'wol_agent'
-        customWorkspace '/opt/GIT/WOL/'
-    }
+    agent any
 
     environment {
         MAAS_API_KEY = credentials('maas-api-key')
@@ -17,7 +14,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                dir('/root/GIT/WOL/') {
+                dir('/opt/GIT/WOL/') {
                     script {
                         if (fileExists('.git')) {
                             sh 'git stash || true'
@@ -32,7 +29,7 @@ pipeline {
 
         stage('Install Dependencies and Run Tests') {
             steps {
-                dir('/root/GIT/WOL/') {
+                dir('/opt/GIT/WOL/') {
                     sh '''
                     sudo apt update
                     sudo apt install -y python3-pip python3-venv
@@ -52,7 +49,7 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             steps {
-                dir('/root/GIT/WOL/') {
+                dir('/opt/GIT/WOL/') {
                     script {
                         sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
