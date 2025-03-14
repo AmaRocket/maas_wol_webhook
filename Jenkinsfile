@@ -1,5 +1,8 @@
 pipeline {
-    agent any
+    agent {
+        label 'wol_agent'
+        customWorkspace '/opt/GIT/WOL/'
+    }
 
     environment {
         MAAS_API_KEY = credentials('maas-api-key')
