@@ -64,8 +64,12 @@ pipeline {
             steps {
                 script {
                     sh '''
+                    echo "Stopping existing Docker Swarm service tasks..." | tee -a $LOG_FILE
+                    docker service update --force --stop-grace-period 10s $DOCKER_SERVICE
+
                     echo "Updating Docker Swarm service..." | tee -a $LOG_FILE
                     docker service update --force --with-registry-auth --image $DOCKER_IMAGE:latest $DOCKER_SERVICE
+
                     echo "Docker Swarm service updated successfully." | tee -a $LOG_FILE
                     '''
                 }
