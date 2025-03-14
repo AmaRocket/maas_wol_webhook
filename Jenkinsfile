@@ -49,7 +49,6 @@ pipeline {
             }
         }
 
-
         stage('Build and Push Docker Image') {
             steps {
                 dir('/opt/GIT/WOL/') {
@@ -86,4 +85,3 @@ pipeline {
         }
     }
 }
-
