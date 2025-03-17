@@ -61,13 +61,30 @@ pipeline {
             }
         }
 
+        stage('Verify Docker') {
+            steps {
+                script {
+                    sh 'docker ps'
+                }
+            }
+        }
+
+        stage('Verify Docker Swarm Status') {
+            steps {
+                script {
+                    sh 'docker info | grep Swarm'
+                }
+            }
+        }
+
         stage('Update Docker Swarm Service') {
             steps {
                 script {
                     sh '''
                         echo "Updating Docker Swarm service..." | tee -a $LOG_FILE
-                        docker service update --force --with-registry-auth --image $DOCKER_IMAGE:latest $DOCKER_SERVICE
+                        docker service update --force --with-registry-auth --image $DOCKER_IMAGE:latest --constraint 'node.labels.role == worker' $DOCKER_SERVICE
                         echo "Docker Swarm service updated successfully." | tee -a $LOG_FILE
+
                         '''
                 }
             }
