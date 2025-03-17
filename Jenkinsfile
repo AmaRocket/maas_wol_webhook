@@ -61,10 +61,11 @@ pipeline {
             }
         }
 
-        stage('Verify Docker') {
+        stage('Clean Docker images') {
             steps {
                 script {
-                    sh 'docker ps'
+                    sh 'docker rmi $(docker images -q) -f'
+                    echo "All Images was deleted"
                 }
             }
         }
@@ -85,7 +86,7 @@ pipeline {
                         echo "Removing the existing Docker Swarm service..." | tee -a $LOG_FILE
                         docker service rm $DOCKER_SERVICE || true
                         echo "Re-creating Docker Swarm service..." | tee -a $LOG_FILE
-
+                        sleep 10
                         docker service create \
                             --name $DOCKER_SERVICE \
                             --constraint 'node.labels.role == worker' \
