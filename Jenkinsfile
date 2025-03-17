@@ -65,10 +65,6 @@ pipeline {
                 script {
                     sh '''
                         echo "Stopping existing Docker Swarm service tasks..." | tee -a $LOG_FILE
-//                         docker service scale $DOCKER_SERVICE=0  # Scale down the service to 0 tasks
-//
-//                         echo "Waiting for tasks to stop..." | tee -a $LOG_FILE
-//                         sleep 10  # Ensure the tasks have stopped before continuing
 
                         echo "Updating Docker Swarm service..." | tee -a $LOG_FILE
                         docker service update --force --with-registry-auth --image $DOCKER_IMAGE:latest $DOCKER_SERVICE
