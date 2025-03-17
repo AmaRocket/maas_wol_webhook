@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                dir('/opt/GIT/WOL/maas_wol_webhook/') {
+                dir('/opt/GIT/WOL/maas_wol_webhook') {
                     script {
                         if (fileExists('.git')) {
                             sh 'git stash || true'
@@ -29,7 +29,7 @@ pipeline {
 
         stage('Install Dependencies and Run Tests') {
             steps {
-                dir('/opt/GIT/WOL/maas_wol_webhook/') {
+                dir('/opt/GIT/WOL/maas_wol_webhook') {
                     sh '''
                     sudo apt update
                     sudo apt install -y python3-pip python3-venv
@@ -48,7 +48,7 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             steps {
-                dir('/opt/GIT/WOL/maas_wol_webhook/') {
+                dir('/opt/GIT/WOL/maas_wol_webhook') {
                     script {
                         sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
