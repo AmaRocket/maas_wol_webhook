@@ -139,7 +139,7 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            if self.path == "/health":
+            if self.path == "/api/health":
                 self._health_check()
                 return
 
