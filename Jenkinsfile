@@ -82,8 +82,25 @@ pipeline {
                 script {
                     sh '''
                         echo "Updating Docker Swarm service..." | tee -a $LOG_FILE
-                        docker service update --force --with-registry-auth --image $DOCKER_IMAGE:latest --constraint 'node.labels.role == worker' $DOCKER_SERVICE
-                        echo "Docker Swarm service updated successfully." | tee -a $LOG_FILE
+                        echo "Removing the existing Docker Swarm service..." | tee -a $LOG_FILE
+                        docker service rm $DOCKER_SERVICE || true
+                        echo "Re-creating Docker Swarm service..." | tee -a $LOG_FILE
+
+                        docker service create \
+                            --name $DOCKER_SERVICE \
+                            --constraint 'node.labels.role == worker' \
+                            --network host \
+                            -e MAAS_API_KEY=$MAAS_API_KEY \
+                            -e MAAS_API_URL=$MAAS_API_URL \
+                            --mount type=bind,source=/root/.ssh,target=/root/.ssh \
+                            --restart-condition any \
+                            --replicas 2 \
+                            --health-cmd "curl -f http://localhost:8181/health || exit 1" \
+                            --health-interval 30s \
+                            --health-retries 3 \
+                            --health-timeout 5s \
+                            $DOCKER_IMAGE:latest
+                        echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
 
                         '''
                 }
