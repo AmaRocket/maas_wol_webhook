@@ -17,6 +17,3 @@ RUN apt-get update && \
 EXPOSE 8181
 
 CMD ["python3", "/var/lib/jenkins/workspace/WOL/maas_webhook_2_5_4.py"]
-
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD curl -f http://localhost:8181/health || exit 1
