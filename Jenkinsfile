@@ -122,19 +122,15 @@ pipeline {
                     # Remove the docker-cleaner service if it exists
                     docker service rm docker-cleaner || true
 
-                    # Wait for Docker to remove the service before proceeding
                     sleep 5
-
-                    # Get the list of worker nodes and create a cleanup task on each one
-                    WORKER_NODES=$(docker node ls --filter "role=worker" --format "{{.ID}}")
 
                     for NODE in $WORKER_NODES; do
                         echo "Creating cleanup task on worker node $NODE..."
 
                         # Create a cleanup service on the worker node
-                        docker service create --name docker-cleaner-$NODE \
-                          --mode global \
-                          --node $NODE \
+                        docker service create \
+                          --name docker-cleaner \
+                          --constraint 'node.labels.role == worker' \
                           --restart-condition none \
                           --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
                           --tty docker:cli sh -c "
