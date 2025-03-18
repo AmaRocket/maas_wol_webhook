@@ -64,15 +64,6 @@ pipeline {
             }
         }
 
-        stage('Clean Docker images') {
-            steps {
-                script {
-                    sh 'docker rmi $(docker images -q) -f'
-                    echo "All Images was deleted"
-                }
-            }
-        }
-
         stage('Verify Docker Swarm Status') {
             steps {
                 script {
@@ -88,6 +79,7 @@ pipeline {
                         echo "Updating Docker Swarm service..." | tee -a $LOG_FILE
                         echo "Removing the existing Docker Swarm service..." | tee -a $LOG_FILE
                         docker service rm $DOCKER_SERVICE || true
+                        sleep 5
                         echo "Waiting for the port to be free..."
                         while netstat -tuln | grep -q ":8181 "; do
                             echo "Port 8181 still in use, waiting..."
@@ -169,6 +161,15 @@ pipeline {
                             $DOCKER_IMAGE:latest
                         echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
                         '''
+                }
+            }
+        }
+
+        stage('Clean Docker images') {
+            steps {
+                script {
+                    sh 'docker rmi $(docker images -q) -f'
+                    echo "All Images was deleted"
                 }
             }
         }
