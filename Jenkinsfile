@@ -88,18 +88,7 @@ pipeline {
                         echo "Updating Docker Swarm service..." | tee -a $LOG_FILE
                         echo "Removing the existing Docker Swarm service..." | tee -a $LOG_FILE
                         docker service rm $DOCKER_SERVICE || true
-                        echo "Re-creating Docker Swarm service..." | tee -a $LOG_FILE
-                        docker service create \
-                            --name $DOCKER_SERVICE \
-                            --constraint 'node.labels.role == worker' \
-                            --network host \
-                            -e MAAS_API_KEY=$MAAS_API_KEY \
-                            -e MAAS_API_URL=$MAAS_API_URL \
-                            --mount type=bind,source=/root/.ssh,target=/root/.ssh \
-                            --restart-condition any \
-                            --replicas 2 \
-                            $DOCKER_IMAGE:latest
-                        echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
+                        echo "SWARM SERVICE $$DOCKER_SERVICE WAS DELETED..." | tee -a $LOG_FILE
                         '''
                 }
             }
@@ -138,6 +127,27 @@ pipeline {
                             '
                         """
                     }
+                }
+            }
+        }
+
+        stage('Update Docker Swarm Service') {
+            steps {
+                script {
+                    sh '''
+                        echo "Re-creating Docker Swarm service..." | tee -a $LOG_FILE
+                        docker service create \
+                            --name $DOCKER_SERVICE \
+                            --constraint 'node.labels.role == worker' \
+                            --network host \
+                            -e MAAS_API_KEY=$MAAS_API_KEY \
+                            -e MAAS_API_URL=$MAAS_API_URL \
+                            --mount type=bind,source=/root/.ssh,target=/root/.ssh \
+                            --restart-condition any \
+                            --replicas 2 \
+                            $DOCKER_IMAGE:latest
+                        echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
+                        '''
                 }
             }
         }
