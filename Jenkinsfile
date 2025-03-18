@@ -103,7 +103,7 @@ pipeline {
             }
         }
 
-        stage('Test Region Connection via SSH') {
+        stage('Clean RACK_CONTROLLER images and containers via SSH') {
             steps {
                 script {
                     sshagent(['rack_server_ssh_credentials']) {
