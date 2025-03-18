@@ -86,8 +86,6 @@ pipeline {
                         echo "Removing the existing Docker Swarm service..." | tee -a $LOG_FILE
                         docker service rm $DOCKER_SERVICE || true
                         echo "Re-creating Docker Swarm service..." | tee -a $LOG_FILE
-                        sleep 10
-                        echo "Go forward"
                         docker service create \
                             --name $DOCKER_SERVICE \
                             --constraint 'node.labels.role == worker' \
@@ -105,6 +103,28 @@ pipeline {
                         echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
 
                         '''
+                }
+            }
+        }
+
+        stage('Docker Cleanup') {
+            steps {
+                script {
+                    sh '''
+                    # Deploy Cleanup Service
+                    docker service create --mode global --name docker-cleaner \
+                      --restart-condition none \
+                      --tty docker:latest sh -c "docker image prune -af && docker container prune -f"
+
+                    # Wait for Cleanup to Finish
+                    while [ "$(docker service ps docker-cleaner --format '{{.CurrentState}}' | grep -c Running)" -gt 0 ]; do
+                        sleep 5
+                        echo "Still running..."
+                    done
+
+                    # Remove Cleanup Service
+                    docker service rm docker-cleaner
+                    '''
                 }
             }
         }
