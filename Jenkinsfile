@@ -97,6 +97,10 @@ pipeline {
                             --mount type=bind,source=/root/.ssh,target=/root/.ssh \
                             --restart-condition any \
                             --replicas 2 \
+                            --health-cmd "curl -f http://localhost:8181/health || exit 1" \
+                            --health-interval 30s \
+                            --health-retries 3 \
+                            --health-timeout 5s \
                             $DOCKER_IMAGE:latest
                         echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
 
