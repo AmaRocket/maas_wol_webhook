@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        REGION_CONTROLLER_IP = credentials('region-controller-ip')
         RACK_CONTROLLER_IP = credentials('rack-controller-ip')
         MAAS_API_KEY = credentials('maas-api-key')
         MAAS_API_URL = credentials('maas_api_ip')
@@ -121,6 +122,24 @@ pipeline {
             }
         }
 
+//        region_server_ssh_credentials
+        stage('Clean REGION_CONTROLLER images and containers via SSH') {
+            steps {
+                script {
+                    sshagent(['region_server_ssh_credentials']) {
+                        sh """
+                        ssh -o StrictHostKeyChecking=no localadmin@${REGION_CONTROLLER_IP} '
+                            set -e # Stop if anything goes wrong
+                            echo Connection Successful!
+                            docker container prune -f
+                            docker image prune -af
+                            echo Images and containers were cleaned!
+                            '
+                        """
+                    }
+                }
+            }
+        }
     }
 
     post {
