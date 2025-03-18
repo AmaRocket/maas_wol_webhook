@@ -148,7 +148,6 @@ pipeline {
                             $DOCKER_IMAGE:latest
                         echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
                         '''
-                }
             }
         }
     }
