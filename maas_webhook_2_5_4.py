@@ -274,6 +274,9 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
             self._bad_path()
 
 
+class ReusableTCPServer(socketserver.TCPServer):
+    allow_reuse_address = True
+
 def main():
     parser = argparse.ArgumentParser(description="Web server to issue WoL commands")
     parser.add_argument("--broadcast", "-b", default="255.255.255.255", type=str)
@@ -291,7 +294,7 @@ def main():
     password = args.password
     token = args.token
 
-    with socketserver.TCPServer(("0.0.0.0", 0), HTTPWoL) as httpd:
+    with ReusableTCPServer(("", args.port), HTTPWoL) as httpd:
     # with socketserver.TCPServer(("", args.port), HTTPWoL) as httpd:
         def shutdown(*args, **kwargs):
             logger.info("Server shutting down")
