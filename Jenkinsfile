@@ -81,7 +81,7 @@ pipeline {
             }
         }
 
-        stage('Update Docker Swarm Service') {
+        stage('Remove Docker Swarm Service') {
             steps {
                 script {
                     sh '''
@@ -107,6 +107,14 @@ pipeline {
                             echo Images and containers were cleaned!
                             '
                         """
+                        echo "Checking if port 8181 is free..."
+                            sh '''
+                            PORT=8181
+                            if netstat -tuln | grep -q ":$PORT "; then
+                                echo "Port $PORT is already in use. Stopping process..."
+                                fuser -k $PORT/tcp || true
+                            fi
+                            '''
                     }
                 }
             }
@@ -126,6 +134,14 @@ pipeline {
                             echo Images and containers were cleaned!
                             '
                         """
+                        echo "Checking if port 8181 is free..."
+                            sh '''
+                            PORT=8181
+                            if netstat -tuln | grep -q ":$PORT "; then
+                                echo "Port $PORT is already in use. Stopping process..."
+                                fuser -k $PORT/tcp || true
+                            fi
+                            '''
                     }
                 }
             }
