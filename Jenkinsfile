@@ -131,7 +131,7 @@ pipeline {
             }
         }
 
-        stage('Update Docker Swarm Service') {
+        stage('Start Docker Swarm Service') {
             steps {
                 script {
                     sh '''
@@ -148,6 +148,7 @@ pipeline {
                             $DOCKER_IMAGE:latest
                         echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
                         '''
+                }
             }
         }
     }
