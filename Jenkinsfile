@@ -83,7 +83,7 @@ pipeline {
                 script {
                     sh '''
                         echo "Stop HAproxy"
-                        systemctl stop haproxy.service
+                        sudo systemctl stop haproxy.service
                         sleep 5
                         echo "HAproxy was stopped"
                         echo "Updating Docker Swarm service..." | tee -a $LOG_FILE
@@ -107,7 +107,7 @@ pipeline {
                         echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
 
                         echo "Start HAproxy"
-                        systemctl start haproxy.service
+                        sudo systemctl start haproxy.service
                         echo "HAproxy was started"
 
                         '''
