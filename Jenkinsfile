@@ -122,6 +122,7 @@ pipeline {
                     # Remove the docker-cleaner service if it exists
                     docker service rm docker-cleaner || true
 
+                    # Wait for Docker to remove the service before proceeding
                     sleep 5
 
                     # Create a cleanup service on the worker node
@@ -131,11 +132,11 @@ pipeline {
                       --restart-condition none \
                       --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
                       --tty docker:cli sh -c "
-                        echo 'Starting Docker cleanup on worker node $NODE...';
+                        echo 'Starting Docker cleanup on worker node...';
                         docker image prune -af;
                         docker container prune -f;
-                        echo 'Docker cleanup completed on worker node $NODE.'
-
+                        echo 'Docker cleanup completed on worker node.'
+                      "
 
                     # Wait for the services to finish on all worker nodes
                     while [ "$(docker service ps docker-cleaner --format '{{.CurrentState}}' | grep -c Running)" -gt 0 ]; do
@@ -143,8 +144,8 @@ pipeline {
                         echo 'Cleanup service still running...'
                     done
 
-                    # Clean up by removing the docker-cleaner service on all worker nodes
-                    docker service rm docker-cleaner-*
+                    # Clean up by removing the docker-cleaner service
+                    docker service rm docker-cleaner
                     '''
                 }
             }
