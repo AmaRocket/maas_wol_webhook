@@ -82,10 +82,6 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        echo "Stop HAproxy"
-                        sudo systemctl stop haproxy.service
-                        sleep 5
-                        echo "HAproxy was stopped"
                         echo "Updating Docker Swarm service..." | tee -a $LOG_FILE
                         echo "Removing the existing Docker Swarm service..." | tee -a $LOG_FILE
                         docker service rm $DOCKER_SERVICE || true
@@ -99,57 +95,13 @@ pipeline {
                             --mount type=bind,source=/root/.ssh,target=/root/.ssh \
                             --restart-condition any \
                             --replicas 2 \
-                            --health-cmd "curl -f http://localhost:8181/health || exit 1" \
-                            --health-interval 5s \
-                            --health-retries 2 \
-                            --health-timeout 1s \
                             $DOCKER_IMAGE:latest
                         echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
-
-                        echo "Start HAproxy"
-                        sudo systemctl start haproxy.service
-                        echo "HAproxy was started"
-
                         '''
                 }
             }
         }
 
-        stage('Docker Cleanup') {
-            steps {
-                script {
-                    sh '''
-                    # Remove the docker-cleaner service if it exists
-                    docker service rm docker-cleaner || true
-
-                    # Wait for Docker to remove the service before proceeding
-                    sleep 5
-
-                    # Create a cleanup service on the worker node
-                    docker service create \
-                      --name docker-cleaner \
-                      --constraint 'node.labels.role == worker' \
-                      --restart-condition none \
-                      --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
-                      --tty docker:cli sh -c "
-                        echo 'Starting Docker cleanup on worker node...';
-                        docker image prune -af;
-                        docker container prune -f;
-                        echo 'Docker cleanup completed on worker node.'
-                      "
-
-                    # Wait for the services to finish on all worker nodes
-                    while [ "$(docker service ps docker-cleaner --format '{{.CurrentState}}' | grep -c Running)" -gt 0 ]; do
-                        sleep 5
-                        echo 'Cleanup service still running...'
-                    done
-
-                    # Clean up by removing the docker-cleaner service
-                    docker service rm docker-cleaner
-                    '''
-                }
-            }
-        }
     }
 
     post {
