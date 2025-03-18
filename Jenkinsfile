@@ -88,7 +88,12 @@ pipeline {
                         echo "Updating Docker Swarm service..." | tee -a $LOG_FILE
                         echo "Removing the existing Docker Swarm service..." | tee -a $LOG_FILE
                         docker service rm $DOCKER_SERVICE || true
-                        echo "SWARM SERVICE $$DOCKER_SERVICE WAS DELETED..." | tee -a $LOG_FILE
+                        echo "Waiting for the port to be free..."
+                        while netstat -tuln | grep -q ":8181 "; do
+                            echo "Port 8181 still in use, waiting..."
+                            sleep 2
+                        done
+                        echo "Port 8181 is now free, continuing..." | tee -a $LOG_FILE
                         '''
                 }
             }
@@ -159,7 +164,7 @@ pipeline {
                             -e MAAS_API_KEY=$MAAS_API_KEY \
                             -e MAAS_API_URL=$MAAS_API_URL \
                             --mount type=bind,source=/root/.ssh,target=/root/.ssh \
-                            --restart-condition any \
+                            --restart-condition on-failure \
                             --replicas 2 \
                             $DOCKER_IMAGE:latest
                         echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
