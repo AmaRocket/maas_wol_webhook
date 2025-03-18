@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        MAAS_USER = credentials('maas_user')
         REGION_CONTROLLER_IP = credentials('region-controller-ip')
         RACK_CONTROLLER_IP = credentials('rack-controller-ip')
         MAAS_API_KEY = credentials('maas-api-key')
@@ -109,7 +110,7 @@ pipeline {
                 script {
                     sshagent(['rack_server_ssh_credentials']) {
                         sh """
-                        ssh -o StrictHostKeyChecking=no localadmin@${RACK_CONTROLLER_IP} '
+                        ssh -o StrictHostKeyChecking=no $MAAS_USER@$RACK_CONTROLLER_IP '
                             set -e # Stop if anything goes wrong
                             echo Connection Successful!
                             docker container prune -f
@@ -128,7 +129,7 @@ pipeline {
                 script {
                     sshagent(['region_server_ssh_credentials']) {
                         sh """
-                        ssh -o StrictHostKeyChecking=no localadmin@${REGION_CONTROLLER_IP} '
+                        ssh -o StrictHostKeyChecking=no $MAAS_USER@$REGION_CONTROLLER_IP '
                             set -e # Stop if anything goes wrong
                             echo Connection Successful!
                             docker container prune -f
