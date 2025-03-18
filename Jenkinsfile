@@ -111,7 +111,7 @@ pipeline {
                     sshagent(['rack_server_ssh_credentials']) {
                         withEnv(["MAAS_USER=${MAAS_USER}", "RACK_CONTROLLER_IP=${RACK_CONTROLLER_IP}"]) {
                             sh """
-                            ssh -o StrictHostKeyChecking=no $MAAS_USER@$RACK_CONTROLLER_IP '
+                            ssh -o StrictHostKeyChecking=no \$MAAS_USER@\${RACK_CONTROLLER_IP} '
                                 set -e # Stop if anything goes wrong
                                 echo Connection Successful!
                                 docker container prune -f
@@ -132,7 +132,7 @@ pipeline {
                     sshagent(['region_server_ssh_credentials']) {
                         withEnv(["MAAS_USER=${MAAS_USER}", "REGION_CONTROLLER_IP=${REGION_CONTROLLER_IP}"]) {
                             sh """
-                            ssh -o StrictHostKeyChecking=no $MAAS_USER@$REGION_CONTROLLER_IP '
+                            ssh -o StrictHostKeyChecking=no \$MAAS_USER@\${REGION_CONTROLLER_IP} '
                                 set -e # Stop if anything goes wrong
                                 echo Connection Successful!
                                 docker container prune -f
