@@ -291,7 +291,8 @@ def main():
     password = args.password
     token = args.token
 
-    with socketserver.TCPServer(("", args.port), HTTPWoL) as httpd:
+    with socketserver.TCPServer(("0.0.0.0", 0), HTTPWoL) as httpd:
+    # with socketserver.TCPServer(("", args.port), HTTPWoL) as httpd:
         def shutdown(*args, **kwargs):
             logger.info("Server shutting down")
             httpd.server_close()
