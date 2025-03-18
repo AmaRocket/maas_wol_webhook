@@ -2,16 +2,18 @@ pipeline {
     agent any
 
     environment {
-        MAAS_USER = credentials('maas_user')
-        REGION_CONTROLLER_IP = credentials('region-controller-ip')
-        RACK_CONTROLLER_IP = credentials('rack-controller-ip')
-        MAAS_API_KEY = credentials('maas-api-key')
-        MAAS_API_URL = credentials('maas_api_ip')
-        DOCKER_USER = credentials('docker-hub-username')
+
         DOCKER_PASS = credentials('docker-hub-password')
         DOCKER_IMAGE = credentials('docker-hub-image')
         DOCKER_SERVICE = "maas_wol_service"
+        DOCKER_USER = credentials('docker-hub-username')
         LOG_FILE = "/var/log/docker_auto_update.log"
+        MAAS_USER = credentials('maas_user')
+        MAAS_API_KEY = credentials('maas-api-key')
+        MAAS_API_URL = credentials('maas_api_ip')
+        REGION_CONTROLLER_IP = credentials('region-controller-ip')
+        RACK_CONTROLLER_IP = credentials('rack-controller-ip')
+
     }
 
     stages {

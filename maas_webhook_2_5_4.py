@@ -7,18 +7,16 @@ import json
 import logging
 import os
 import re
-import uuid
-import time
 import select
 import signal
 import socket
 import socketserver
 import subprocess
 import sys
-
+import time
+import uuid
 
 import paramiko
-
 
 GET_REGEX = re.compile(r"^/(?P<MAC>([\da-f]{2}[:-]){5}[\da-f]{2})[/]?$", re.I)
 POST_REGEX = re.compile(
@@ -51,7 +49,6 @@ print(f"Using MAAS_API_URL: {api_url}")
 
 
 class HTTPWoL(http.server.SimpleHTTPRequestHandler):
-
 
     def _authenticate(self):
         global username, password, token
@@ -89,7 +86,9 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
         API_KEY = os.getenv("MAAS_API_KEY").split(":")  # API Key for user
         # logger.info(API_KEY)
         if not API_KEY:
-            raise ValueError("API key is not set. Please set the MAAS_API_KEY environment variable.")
+            raise ValueError(
+                "API key is not set. Please set the MAAS_API_KEY environment variable."
+            )
         try:
             # Execute curl to get machine details and parse with jq
             curl_command = f"""
@@ -97,8 +96,9 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
             jq -r '[.[] | {{osystem_id: .system_id, ip_addresses: .ip_addresses[0], hostname: (.hostname + "." + .domain.name), mac_address: .interface_set[0].mac_address}}] | .[] | select(.osystem_id == "{system_id}") | .ip_addresses'
             """
 
-            result = subprocess.run(curl_command, shell=True, capture_output=True, text=True, check=True)
-
+            result = subprocess.run(
+                curl_command, shell=True, capture_output=True, text=True, check=True
+            )
 
             ip_address = result.stdout.strip()
             logger.info(f"System ID: {system_id} -- IP: {ip_address}  \n")
@@ -109,7 +109,9 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
         except subprocess.CalledProcessError as e:
             logger.error(f"Error executing MAAS command: {e.stderr}")
         except (KeyError, IndexError) as e:
-            logger.error(f"Error parsing IP address from MAAS output IP: {ip_address} error : {e}")
+            logger.error(
+                f"Error parsing IP address from MAAS output IP: {ip_address} error : {e}"
+            )
         except Exception as e:
             logger.error(f"An unexpected error occurred: {e}")
 
@@ -134,8 +136,6 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
                 return False
         except Exception as e:
             logger.error("Exception in _check_status(): ", e)
-
-
 
     def do_GET(self):
         try:
@@ -175,14 +175,12 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(b"OK\n")
             logger.info("Health check successful")
         except (ConnectionResetError, BrokenPipeError):
-            # Log the error and exit gracefully
             logger.warning("Client disconnected prematurely during health check.")
         except Exception as e:
             self.send_response(503)
             self.end_headers()
             self.wfile.write(f"Error: {e}".encode("utf-8"))
             logger.error(f"Error: {e}")
-
 
     def _start(self, mac_address):
         global machine_status, broadcast_ip, broadcast_port
@@ -225,7 +223,12 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
             # Proceed with sending the shutdown signal.
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(target_ip, username=ssh_user, key_filename=ssh_key_path, timeout=connection_timeout)
+            ssh.connect(
+                target_ip,
+                username=ssh_user,
+                key_filename=ssh_key_path,
+                timeout=connection_timeout,
+            )
             ssh.exec_command("sudo shutdown now")
             self.send_response(http.client.OK)
             self.end_headers()
@@ -249,9 +252,8 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b"Unexpected error occurred during shutdown process!\n")
         finally:
-            if 'ssh' in locals():  # Ensure ssh is defined before trying to close it.
+            if "ssh" in locals():  # Ensure ssh is defined before trying to close it.
                 ssh.close()
-
 
     def do_POST(self):
         if not self._authenticate():
@@ -266,7 +268,9 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
                     self._stop(m.group("MAC"))
                 logger.info(f"Received {op} operation for MAC {m.group('MAC')}")
             except Exception as e:
-                logger.error(f"Error processing {op} operation for MAC {m.group('MAC')}: {e}")
+                logger.error(
+                    f"Error processing {op} operation for MAC {m.group('MAC')}: {e}"
+                )
                 self.send_response(http.client.INTERNAL_SERVER_ERROR)
                 self.end_headers()
                 self.wfile.write(b"Error occurred during processing!\n")
@@ -276,6 +280,7 @@ class HTTPWoL(http.server.SimpleHTTPRequestHandler):
 
 class ReusableTCPServer(socketserver.TCPServer):
     allow_reuse_address = True
+
 
 def main():
     parser = argparse.ArgumentParser(description="Web server to issue WoL commands")
@@ -295,7 +300,7 @@ def main():
     token = args.token
 
     with ReusableTCPServer(("", args.port), HTTPWoL) as httpd:
-    # with socketserver.TCPServer(("", args.port), HTTPWoL) as httpd:
+        # with socketserver.TCPServer(("", args.port), HTTPWoL) as httpd:
         def shutdown(*args, **kwargs):
             logger.info("Server shutting down")
             httpd.server_close()

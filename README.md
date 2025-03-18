@@ -143,10 +143,13 @@ This project includes a Jenkins pipeline configuration for automating the testin
 - **Clone Repository:**    Pulls the latest code from the GitHub repository.
 - **Install Dependencies:**  Installs necessary dependencies using pip from requirements.txt.
 - **Run Tests:**  Executes unit tests using pytest to ensure that the code works as expected.
-- **Build Docker Image:**  Builds a Docker image from the latest code. The image is tagged with maas-wol-webhook:latest.
-- **Check and Restart Container:**  
--- Checks if the Docker container is running, stops and removes it if needed, and starts a new container with the updated image.<br />
--- The MAAS API Token is injected into the container using Jenkins credentials securely stored in the Jenkins Credentials Manager. This ensures that sensitive information like tokens is handled securely.
+- **Build and Push Docker Image:**  Builds a Docker image from the latest code. And push it to Docker registry
+- **Verify Docker Swarm Status:** Checks if the Docker Swarm is running 
+- **Remove Docker Swarm Service** Kill running wol service, if it exist
+- **Clean RACK_CONTROLLER images and containers via SSH**
+- **Clean REGION_CONTROLLER images and containers via SSH**
+- **Start Docker Swarm Service** Start updated Swarm service  (update command doesn't work properly in my setup)
+- **Clean Docker images** Clean host machine system
 
 ## Handling Sensitive Data (API Keys and Tokens)
  - **Credentials:** We recommend storing sensitive data like the MAAS API key in Jenkins Credentials or environment variables to ensure secure access.

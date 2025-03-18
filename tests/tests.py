@@ -1,15 +1,16 @@
-import unittest
-from unittest.mock import patch, MagicMock
-from io import BytesIO
-import os
 import json
+import os
 import subprocess
 import sys
+import unittest
+from io import BytesIO
+from unittest.mock import MagicMock, patch
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from maas_webhook_2_5_4 import HTTPWoL, machine_status, GET_REGEX, POST_REGEX
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from io import BytesIO
 from unittest.mock import Mock
+
+from maas_webhook_2_5_4 import GET_REGEX, POST_REGEX, HTTPWoL, machine_status
 
 
 class TestHTTPWoL(unittest.TestCase):
@@ -35,7 +36,7 @@ class TestHTTPWoL(unittest.TestCase):
         mock_request = Mock()
         mock_request.makefile = Mock(return_value=BytesIO(b"GET /path HTTP/1.1\r\n"))
 
-        handler = self.handler(mock_request, ('127.0.0.1', 12345), mock_server)
+        handler = self.handler(mock_request, ("127.0.0.1", 12345), mock_server)
 
         handler.headers = {"Authorization": "Bearer valid_token"}
         handler.wfile = BytesIO()
@@ -44,7 +45,6 @@ class TestHTTPWoL(unittest.TestCase):
 
         authenticated = handler._authenticate()
         self.assertTrue(authenticated, "Authentication with a valid token should pass")
-
 
     def test_regex_get(self):
         match = GET_REGEX.match("/2c:44:fd:2a:0e:2a/")
@@ -64,8 +64,5 @@ class TestHTTPWoL(unittest.TestCase):
         self.assertEqual(match.group("OP"), "stop")
 
 
-
 if __name__ == "__main__":
     unittest.main()
-
-
