@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        RACK_CONTROLLER_IP = credentials('rack-controller-ip')
         MAAS_API_KEY = credentials('maas-api-key')
         MAAS_API_URL = credentials('maas_api_ip')
         DOCKER_USER = credentials('docker-hub-username')
@@ -98,6 +99,24 @@ pipeline {
                             $DOCKER_IMAGE:latest
                         echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
                         '''
+                }
+            }
+        }
+
+        stage('Test Region Connection via SSH') {
+            steps {
+                script {
+                    sshagent(['rack_server_ssh_credentials']) {
+                        sh """
+                        ssh -o StrictHostKeyChecking=no localadmin@${RACK_CONTROLLER_IP} '
+                            set -e # Stop if anything goes wrong
+                            echo Connection Successful!
+                            docker container prune -f
+                            docker image prune -af
+                            echo Images and containers were cleaned!
+                            '
+                        """
+                    }
                 }
             }
         }
