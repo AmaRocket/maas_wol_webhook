@@ -124,22 +124,18 @@ pipeline {
 
                     sleep 5
 
-                    for NODE in $WORKER_NODES; do
-                        echo "Creating cleanup task on worker node $NODE..."
+                    # Create a cleanup service on the worker node
+                    docker service create \
+                      --name docker-cleaner \
+                      --constraint 'node.labels.role == worker' \
+                      --restart-condition none \
+                      --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
+                      --tty docker:cli sh -c "
+                        echo 'Starting Docker cleanup on worker node $NODE...';
+                        docker image prune -af;
+                        docker container prune -f;
+                        echo 'Docker cleanup completed on worker node $NODE.'
 
-                        # Create a cleanup service on the worker node
-                        docker service create \
-                          --name docker-cleaner \
-                          --constraint 'node.labels.role == worker' \
-                          --restart-condition none \
-                          --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
-                          --tty docker:cli sh -c "
-                            echo 'Starting Docker cleanup on worker node $NODE...';
-                            docker image prune -af;
-                            docker container prune -f;
-                            echo 'Docker cleanup completed on worker node $NODE.'
-                          "
-                    done
 
                     # Wait for the services to finish on all worker nodes
                     while [ "$(docker service ps docker-cleaner --format '{{.CurrentState}}' | grep -c Running)" -gt 0 ]; do
