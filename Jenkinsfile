@@ -96,7 +96,7 @@ pipeline {
                             --restart-condition any \
                             --replicas 2 \
                             --health-cmd "curl -f http://localhost:8181/health || exit 1" \
-                            --health-interval 30s \
+                            --health-interval 10s \
                             --health-retries 3 \
                             --health-timeout 5s \
                             $DOCKER_IMAGE:latest
@@ -114,7 +114,8 @@ pipeline {
                     # Deploy Cleanup Service
                     docker service create --mode global --name docker-cleaner \
                       --restart-condition none \
-                      --tty docker:latest sh -c "docker image prune -af && docker container prune -f"
+                      --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
+                      --tty docker:cli sh -c "docker image prune -af && docker container prune -f"
 
                     # Wait for Cleanup to Finish
                     while [ "$(docker service ps docker-cleaner --format '{{.CurrentState}}' | grep -c Running)" -gt 0 ]; do
