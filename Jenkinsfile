@@ -96,9 +96,9 @@ pipeline {
                             --restart-condition any \
                             --replicas 2 \
                             --health-cmd "curl -f http://localhost:8181/health || exit 1" \
-                            --health-interval 10s \
-                            --health-retries 3 \
-                            --health-timeout 5s \
+                            --health-interval 5s \
+                            --health-retries 2 \
+                            --health-timeout 1s \
                             $DOCKER_IMAGE:latest
                         echo "Docker Swarm service recreated successfully." | tee -a $LOG_FILE
 
@@ -111,19 +111,21 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    # Deploy Cleanup Service
+                    docker service rm docker-cleaner || true
+
+                    sleep 5
+
                     docker service create --mode global --name docker-cleaner \
                       --restart-condition none \
                       --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
                       --tty docker:cli sh -c "docker image prune -af && docker container prune -f"
 
-                    # Wait for Cleanup to Finish
+
                     while [ "$(docker service ps docker-cleaner --format '{{.CurrentState}}' | grep -c Running)" -gt 0 ]; do
                         sleep 5
                         echo "Still running..."
                     done
 
-                    # Remove Cleanup Service
                     docker service rm docker-cleaner
                     '''
                 }
