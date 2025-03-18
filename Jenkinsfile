@@ -109,34 +109,38 @@ pipeline {
             steps {
                 script {
                     sshagent(['rack_server_ssh_credentials']) {
-                        sh """
-                        ssh -o StrictHostKeyChecking=no $MAAS_USER@$RACK_CONTROLLER_IP '
-                            set -e # Stop if anything goes wrong
-                            echo Connection Successful!
-                            docker container prune -f
-                            docker image prune -af
-                            echo Images and containers were cleaned!
-                            '
-                        """
+                        withEnv(["MAAS_USER=${MAAS_USER}", "RACK_CONTROLLER_IP=${RACK_CONTROLLER_IP}"]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no $MAAS_USER@$RACK_CONTROLLER_IP '
+                                set -e # Stop if anything goes wrong
+                                echo Connection Successful!
+                                docker container prune -f
+                                docker image prune -af
+                                echo Images and containers were cleaned!
+                                '
+                            """
+                        }
                     }
                 }
             }
         }
 
-//        region_server_ssh_credentials
+
         stage('Clean REGION_CONTROLLER images and containers via SSH') {
             steps {
                 script {
                     sshagent(['region_server_ssh_credentials']) {
-                        sh """
-                        ssh -o StrictHostKeyChecking=no $MAAS_USER@$REGION_CONTROLLER_IP '
-                            set -e # Stop if anything goes wrong
-                            echo Connection Successful!
-                            docker container prune -f
-                            docker image prune -af
-                            echo Images and containers were cleaned!
-                            '
-                        """
+                        withEnv(["MAAS_USER=${MAAS_USER}", "REGION_CONTROLLER_IP=${REGION_CONTROLLER_IP}"]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no $MAAS_USER@$REGION_CONTROLLER_IP '
+                                set -e # Stop if anything goes wrong
+                                echo Connection Successful!
+                                docker container prune -f
+                                docker image prune -af
+                                echo Images and containers were cleaned!
+                                '
+                            """
+                        }
                     }
                 }
             }
