@@ -4,7 +4,7 @@ pipeline {
     environment {
 
         DOCKER_PASS = credentials('docker-hub-password')
-        DOCKER_IMAGE = credentials('docker-hub-image')
+        DOCKER_IMAGE = credentials('wol-docker-hub-image')
         DOCKER_SERVICE = "maas_wol_service"
         DOCKER_USER = credentials('docker-hub-username')
         LOG_FILE = "/var/log/docker_auto_update.log"
