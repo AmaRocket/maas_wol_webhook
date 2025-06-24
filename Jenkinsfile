@@ -8,6 +8,7 @@ pipeline {
         DOCKER_SERVICE = "maas_wol_service"
         DOCKER_USER = credentials('docker-hub-username')
         LOG_FILE = "/var/log/docker_auto_update.log"
+        SSH_USER = credentials('ssh_user')
         MAAS_USER = credentials('maas_user')
         MAAS_API_KEY = credentials('maas-api-key')
         MAAS_API_URL = credentials('maas_api_ip')
@@ -98,7 +99,7 @@ pipeline {
                 script {
                     sshagent(['rack_server_ssh_credentials']) {
                         sh """
-                        ssh -o StrictHostKeyChecking=no \$MAAS_USER@\${RACK_CONTROLLER_IP} '
+                        ssh -o StrictHostKeyChecking=no \$SSH_USER@\${RACK_CONTROLLER_IP} '
                             set -e # Stop if anything goes wrong
                             echo Connection Successful!
                             docker container prune -f
@@ -125,7 +126,7 @@ pipeline {
                 script {
                     sshagent(['region_server_ssh_credentials']) {
                         sh """
-                        ssh -o StrictHostKeyChecking=no \$MAAS_USER@\${REGION_CONTROLLER_IP} '
+                        ssh -o StrictHostKeyChecking=no \$SSH_USER@\${REGION_CONTROLLER_IP} '
                             set -e # Stop if anything goes wrong
                             echo Connection Successful!
                             docker container prune -f
