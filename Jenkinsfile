@@ -102,8 +102,8 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no \$SSH_USER@\${RACK_CONTROLLER_IP} '
                             set -e # Stop if anything goes wrong
                             echo Connection Successful!
-                            docker container prune -f
-                            docker image prune -af
+                            docker container prune -f || true
+                            docker image prune -af || true
                             echo Images and containers were cleaned!
                             '
                         """
