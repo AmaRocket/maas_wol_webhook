@@ -179,7 +179,7 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment and Swarm update completed successfully!'
+            echo 'Deployment and Swarm update completed successfully! '
         }
         failure {
             echo 'Deployment failed. Check logs for details.'
