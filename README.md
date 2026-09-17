@@ -2,7 +2,7 @@
 
 This service provides a REST API to trigger Wake-on-LAN (WoL) and shutdown commands for machines. It can be used to remotely wake up or shut down machines in a network.
 
-![img.png](img.png)
+![img.png](wol_diagram.png)
 
 ## Overview
 
