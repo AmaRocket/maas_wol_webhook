@@ -72,6 +72,8 @@ sudo docker run --network=host --env-file /etc/docker/maas_api_key.env -p 8181:8
 
 ## API Usage
 
+All status, start, and stop requests require a **`System_id` header** containing the node's MAAS system ID. The MAC address in the request path identifies the node for the WoL/shutdown action, but the service resolves the node's IP through the MAAS API by `system_id`. Requests missing this header receive `400 Bad Request`.
+
 ### 1. Check Status (GET)
 
 #### Endpoint:
@@ -87,7 +89,7 @@ sudo docker run --network=host --env-file /etc/docker/maas_api_key.env -p 8181:8
 
 #### Example:
 ```bash
-curl -X GET "http://localhost:8181/00:14:22:01:23:45"
+curl -X GET -H "System_id: <maas-system-id>" "http://localhost:8181/00:14:22:01:23:45"
 ```
 
 `POST /{MAC_ADDRESS}/?op=start`
@@ -97,7 +99,7 @@ curl -X GET "http://localhost:8181/00:14:22:01:23:45"
 
 #### Example:
 ```bash
-curl -X POST "http://localhost:8181/00:14:22:01:23:45/?op=start"
+curl -X POST -H "System_id: <maas-system-id>" "http://localhost:8181/00:14:22:01:23:45/?op=start"
 ```
 
 
@@ -108,7 +110,7 @@ curl -X POST "http://localhost:8181/00:14:22:01:23:45/?op=start"
 
 #### Example:
 ```bash
-curl -X POST "http://localhost:8181/00:14:22:01:23:45/?op=stop"
+curl -X POST -H "System_id: <maas-system-id>" "http://localhost:8181/00:14:22:01:23:45/?op=stop"
 ```
 
 ## Configuration
@@ -117,7 +119,7 @@ You can configure the service by providing the following arguments during contai
 
 - **--broadcast**: IP address to use for Wake-on-LAN broadcast (default: 255.255.255.255).
 - **--broadcast-port**: Port for the Wake-on-LAN broadcast (default: 9).
-- **--port**: Port for the HTTP service to listen on (default: 8080).
+- **--port**: Port for the HTTP service to listen on (default: 8181).
 - **--username**: Username for basic authentication (optional).
 - **--password**: Password for basic authentication (optional).
 - **--token**: API token for authentication (optional).
